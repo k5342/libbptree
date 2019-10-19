@@ -1,24 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <math.h>
-
-typedef long long bptree_key_t;
-
-typedef struct bptree_node {
-	struct bptree *context;
-	struct bptree_node *parent;
-	struct bptree_node **children;
-	bptree_key_t *keys;
-	int used;
-	int is_leaf;
-} bptree_node_t;
-
-typedef struct bptree {
-	int nkeys;
-	struct bptree_node *root;
-} bptree_t;
+#include <bptree.h>
 
 void bptree_perror(char *s){
 	if (s == NULL){
@@ -109,7 +89,9 @@ int bptree_node_insert_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t ke
 		return 0;
 	}
 	for (int i = 0; i < node->used && i < bpt->nkeys; i++){
+#ifdef DEBUG
 		printf("keys[%d] = %lld\n", i, node->keys[i]);
+#endif
 		if (node->keys[i] > key){
 			return i;
 		}
@@ -118,12 +100,16 @@ int bptree_node_insert_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t ke
 }
 
 void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key, bptree_node_t *r_child){
+#ifdef DEBUG
 	printf("insert into node: key = %lld\n", key);
-//	  bptree_node_print(bpt, r_child);
+	bptree_node_print(bpt, r_child);
+#endif
 	bptree_node_t *dst_node = l_child->parent;
 	if (dst_node == NULL){
 		// divide root
+#ifdef DEBUG
 		printf("divide root: used = %d\n", l_child->used);
+#endif
 		bptree_node_t *new_root = bptree_node_create(bpt);
 		new_root->keys[0] = r_child->keys[0];
 		new_root->children[0] = l_child;
@@ -136,7 +122,9 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 	}
 	
 	int insert_index = bptree_node_insert_index(bpt, dst_node, key);
+#ifdef DEBUG
 	printf("node_insert: index = %d, r_child = %p\n", insert_index, r_child);
+#endif
 	if (dst_node->used + 1 <= bpt->nkeys){
 		// shift and insert
 //		  bptree_node_print(bpt, dst_node);
@@ -151,7 +139,9 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 		return;
 	} else {
 		// copy
+#ifdef DEBUG
 		printf("divide node\n");
+#endif
 		bptree_node_t *tmp_children[bpt->nkeys + 1]; // TODO: optimize this
 		bptree_key_t tmp_keys[bpt->nkeys + 1];
 		
@@ -223,7 +213,9 @@ bptree_node_t *bptree_leaf_insert_search(bptree_t *bpt, bptree_key_t key){
 		}
 		int idx;
 		for (idx = 0; idx < current->used; idx++){
+#ifdef DEBUG
 			printf("comp: %d > %d\n", current->keys[idx], key);
+#endif
 			if (current->keys[idx] > key){
 				break;
 			}
@@ -245,7 +237,9 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 		leaf->children[insert_index] = (bptree_node_t *)value;
 		leaf->used += 1;
 	} else {
+#ifdef DEBUG
 		printf("divide leaf: key = %lld\n", key);
+#endif
 		// copy temp node
 		bptree_node_t *tmp_children[bpt->nkeys + 1]; // TODO: optimize this
 		bptree_key_t tmp_keys[bpt->nkeys + 1];
@@ -318,18 +312,3 @@ void bptree_free(bptree_t *bpt){
 	free(bpt);
 }
 
-int main(int argc, char *argv[]){
-	setvbuf(stdout, (char *)NULL, _IONBF, 0);
-	bptree_t *bpt = bptree_init(10);
-	if (bpt == NULL){
-		bptree_perror("bptree_init returned NULL");
-		return -1;
-	}
-	for (int i = 100; i > 0; i--){
-		printf("insert %d\n", i);
-		bptree_insert(bpt, (bptree_key_t)i, NULL);
-		bptree_print(bpt);
-	}
-	bptree_free(bpt);
-	return 0;
-}
