@@ -1,7 +1,17 @@
 ## B+ Tree
+
+### Requirements
+- -std=c99 support
+- Autotools
+- libtool
+
 ### Build
 ```
-gcc -std=c99 bptree.c -pg -g3 -lm -o insert
+git clone ...
+autoreconf -i -f
+./configure --prefix=/path/to/your/install/dir
+make
+make install
 ```
 
 ### TODO
