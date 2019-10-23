@@ -280,6 +280,21 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 	}
 }
 
+// search B+-tree passed by bpt
+// returns child's pointer and status = 1 (if found)
+// returns NULL and status = 0 (if not found)
+void *bptree_search(bptree_t *bpt, bptree_key_t key, int *status){
+	bptree_node_t *leaf = bptree_leaf_search(bpt, key);
+	for (int i = 0; i < leaf->used; i++){
+		if (key == leaf->keys[i]){
+			*status = 1;
+			return leaf->children[i];
+		}
+	}
+	*status = 0;
+	return NULL;
+}
+
 void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value){
 	bptree_node_t *leaf = bptree_leaf_search(bpt, key);
 	bptree_leaf_insert(bpt, leaf, key, value);
