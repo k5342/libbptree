@@ -30,7 +30,7 @@ void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value);
 
 // helpers
 void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, void *value);
-bptree_node_t *bptree_leaf_insert_search(bptree_t *bpt, bptree_key_t key);
+bptree_node_t *bptree_leaf_search(bptree_t *bpt, bptree_key_t key);
 void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key, bptree_node_t *r_child);
 int bptree_node_insert_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t key);
 

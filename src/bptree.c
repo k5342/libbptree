@@ -205,7 +205,7 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 	}
 }
 
-bptree_node_t *bptree_leaf_insert_search(bptree_t *bpt, bptree_key_t key){
+bptree_node_t *bptree_leaf_search(bptree_t *bpt, bptree_key_t key){
 	bptree_node_t *current = bpt->root;
 	while (current->is_leaf == false){
 		if (current->used <= 0){
@@ -281,7 +281,7 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 }
 
 void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value){
-	bptree_node_t *leaf = bptree_leaf_insert_search(bpt, key);
+	bptree_node_t *leaf = bptree_leaf_search(bpt, key);
 	bptree_leaf_insert(bpt, leaf, key, value);
 }
 
