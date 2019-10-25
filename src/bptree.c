@@ -84,6 +84,15 @@ void bptree_node_destroy(bptree_node_t *node){
 	free(node);
 }
 
+int bptree_node_key_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t key){
+	for(int i = 0; i < node->used; i++){
+		if (node->key[i] == key){
+			return i;
+		}
+	}
+	return -1;
+}
+
 int bptree_node_insert_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t key){
 	if (node->used <= 0){
 		return 0;
@@ -280,6 +289,33 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 	}
 }
 
+void bptree_node_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
+}
+
+void bptree_leaf_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
+	int idx = bptree_node_key_index(bpt, leaf, key);
+	if (idx < 0){
+		return;
+	}
+	if (idx == 0){
+		bptree_node_delete(bpt, leaf->parent, leaf->keys[idx]);
+	}
+	for(int i = idx; i < leaf->used - 1; i++){
+		leaf->keys[i] = leaf->keys[i + 1];
+		leaf->children[i] = leaf->children[i + 1];
+	}
+	leaf->used -= 1;
+	if (leaf->used < ceil((float)(bpt->nkeys - 1) / 2)){
+		// need to move a element from adjacent leaf
+		bptree_node_t *adjacent_leaf = leaf->children[bpt->nkeys];
+		bptree_key_t *k = adjacent_leaf->keys[0];
+		void *v = adjacent_leaf->children[0];
+		bptree_leaf_delete(bpt, adjacent_leaf, k);
+		bptree_leaf_insert(bpt, leaf, k, v);
+	}
+}
+
+
 // search B+-tree passed by bpt
 // returns child's pointer and status = 1 (if found)
 // returns NULL and status = 0 (if not found)
@@ -295,9 +331,15 @@ void *bptree_search(bptree_t *bpt, bptree_key_t key, int *status){
 	return NULL;
 }
 
+
 void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value){
 	bptree_node_t *leaf = bptree_leaf_search(bpt, key);
 	bptree_leaf_insert(bpt, leaf, key, value);
+}
+
+void bptree_delete(bptree_t *bpt, bptree_key_t key){
+	bptree_node_t *leaf = bptree_leaf_search(bpt, key);
+	bptree_leaf_delete(bpt, leaf, key);
 }
 
 bptree_t *bptree_init(int nkeys){
