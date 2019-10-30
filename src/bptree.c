@@ -85,8 +85,18 @@ void bptree_node_destroy(bptree_node_t *node){
 }
 
 int bptree_node_key_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t key){
+	for(int i = 0; i <= node->used; i++){
+		if (node->keys[i] == key){
+			return i;
+		}
+	}
+	return -1;
+}
+
+// search node in ptr
+int bptree_node_ptr_index(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 	for(int i = 0; i < node->used; i++){
-		if (node->key[i] == key){
+		if (node->children[i] == ptr){
 			return i;
 		}
 	}
@@ -292,26 +302,79 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 void bptree_node_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
 }
 
+void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_leaf_t *left_leaf, bptree_leaf_t *right_leaf, bptree_leaf_t *underfull_leaf, int parent_key_index){
+	int leaf_minimum_keys = ceil((float)(bpt->nkeys - 1) / 2);
+	if (left_leaf->used + right_leaf->used < bpt->nkeys){
+		// merge
+	} else {
+		// redistribute pointers
+		int need_keys = leaf_minimum_keys - underfull_leaf->used;
+		if (need_keys <= 0){
+			// nothing to do
+			return;
+		}
+		if (underfull_leaf == left_leaf){
+			// data moves from head of right leaf to end of left leaf
+			for(int i = 0; i < need_keys; i++){
+				left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
+				left_leaf->children[left_leaf->used] = right_leaf->children[i];
+				right_leaf->keys[i] = right_leaf->keys[i + 1];
+				right_leaf->children[i] = right_leaf->keys[i + 1];
+				left_leaf->used += 1;
+				right_leaf->used -= 1;
+			}
+		} else {
+			// data moves from left to right
+			for(int i = 0; i < need_keys; i++){
+				right_leaf->keys[need_keys - i + 1] = right_leaf->keys[need_keys - i];
+				right_leaf->children[need_keys - i + 1] = right_leaf->children[need_keys - i];
+				right_leaf->keys[need_keys - i] = left_leaf->keys[left_leaf->used];
+				right_leaf->children[need_keys - i] = left_leaf->children[left_leaf->used];
+				left_leaf->used -= 1;
+				right_leaf->used += 1;
+			}
+		}
+		// finally update key in parent node
+		right_leaf->parent->keys[parent_key_index] = right_leaf->keys[0];
+	}
+}
+
 void bptree_leaf_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
 	int idx = bptree_node_key_index(bpt, leaf, key);
 	if (idx < 0){
+		// not found
 		return;
-	}
-	if (idx == 0){
-		bptree_node_delete(bpt, leaf->parent, leaf->keys[idx]);
 	}
 	for(int i = idx; i < leaf->used - 1; i++){
 		leaf->keys[i] = leaf->keys[i + 1];
 		leaf->children[i] = leaf->children[i + 1];
 	}
 	leaf->used -= 1;
-	if (leaf->used < ceil((float)(bpt->nkeys - 1) / 2)){
-		// need to move a element from adjacent leaf
-		bptree_node_t *adjacent_leaf = leaf->children[bpt->nkeys];
-		bptree_key_t *k = adjacent_leaf->keys[0];
-		void *v = adjacent_leaf->children[0];
-		bptree_leaf_delete(bpt, adjacent_leaf, k);
-		bptree_leaf_insert(bpt, leaf, k, v);
+	
+	if (leaf == bpt->root){
+		return;
+	} else {
+		// if leaf does not satisfy B+tree requirements after remove, then redistribute or merge them.
+		int node_minimum_keys = ceil((float)(bpt->nkeys - 1) / 2);
+		if (leaf->used >= node_minimum_keys){
+			// delete is done, yay!
+			return;
+		} else {
+			// redistribute or merge from adjacent leaf
+			// first, look up the parent node and then find adjacent leaf and key
+			int idx = bptree_node_ptr_index(bpt, leaf->parent, leaf);
+			if (idx < leaf->parent->used){
+				// look right sibling
+				bptree_node_t *affected = leaf->parent->children[idx - 1];
+				bptree_leaf_redistribute_or_merge(bpt, affected, leaf, leaf, idx - 1);
+			} else {
+				// pointer found in the most right of children
+				// then look left sibling
+				bptree_node_t *affected = leaf->parent->children[idx + 1];
+				bptree_leaf_redistribute_or_merge(bpt, leaf, affected, leaf, idx);
+			}
+			return;
+		}
 	}
 }
 
