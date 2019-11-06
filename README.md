@@ -5,6 +5,11 @@
 - Autotools
 - libtool
 
+#### On Ubuntu
+```
+# apt-get install gcc autoconf libtool
+```
+
 ### Build
 ```
 git clone ...
