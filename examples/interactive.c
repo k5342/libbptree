@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
 			goto next;
 		}
 		if (strncmp(t, "d", 1) == 0
-			strncmp(t, "del", 3) == 0
+			|| strncmp(t, "del", 3) == 0
 			|| strncmp(t, "delete", 6) == 0){
 			t = strtok(NULL, " ");
 			bptree_key_t key = (bptree_key_t)strtol(t, NULL, 10);
