@@ -354,7 +354,7 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bp
 	}
 }
 
-void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_leaf_t *left_leaf, bptree_leaf_t *right_leaf, bptree_leaf_t *underfull_leaf, int parent_key_index){
+void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, bptree_node_t *right_leaf, bptree_node_t *underfull_leaf, int parent_key_index){
 	int leaf_minimum_keys = ceil((float)(bpt->nkeys - 1) / 2);
 	if (left_leaf->used + right_leaf->used < bpt->nkeys){
 		// merge
