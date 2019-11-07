@@ -35,6 +35,7 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 bptree_node_t *bptree_leaf_search(bptree_t *bpt, bptree_key_t key);
 void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key, bptree_node_t *r_child);
 int bptree_node_insert_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t key);
+void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, bptree_node_t *right_leaf, bptree_node_t *underfull_leaf, int parent_key_index);
 
 bptree_node_t *bptree_node_create(bptree_t *bpt);
 bptree_node_t *bptree_leaf_create(bptree_t *bpt);

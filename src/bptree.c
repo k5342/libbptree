@@ -95,7 +95,14 @@ int bptree_node_key_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t key){
 
 // search node in ptr
 int bptree_node_ptr_index(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
-	for(int i = 0; i < node->used; i++){
+#ifdef DEBUG
+	printf("bptree_node_ptr_index(bpt = %p, node = %p, ptr = %p)\n", bpt, node, ptr);
+	printf("bptree_node_ptr_index: node->used = %d\n", node->used);
+#endif
+	for(int i = 0; i <= node->used; i++){
+#ifdef DEBUG
+		printf("bptree_node_ptr_index: node->children[%d] = %p\n", i, node->children[i]);
+#endif
 		if (node->children[i] == ptr){
 			return i;
 		}
@@ -342,25 +349,61 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bp
 			int idx = bptree_node_ptr_index(bpt, node->parent, node);
 			if (idx < node->parent->used){
 				// look right sibling
-				bptree_node_t *affected = node->parent->children[idx];
-				bptree_leaf_redistribute_or_merge(bpt, affected, node, node, idx);
+				bptree_node_t *affected = node->parent->children[idx + 1];
+				bptree_leaf_redistribute_or_merge(bpt, node, affected, node, idx);
 			} else {
 				// pointer found in the most right of children
 				// then look left sibling
 				bptree_node_t *affected = node->parent->children[idx - 1];
-				bptree_leaf_redistribute_or_merge(bpt, node, affected, node, idx - 1);
+				bptree_leaf_redistribute_or_merge(bpt, affected, node, node, idx - 1);
 			}
 		}
 	}
 }
 
 void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, bptree_node_t *right_leaf, bptree_node_t *underfull_leaf, int parent_key_index){
+#ifdef DEBUG
+	printf("bptree_leaf_redistribute_or_merge(bpt = %p, left_leaf = %p, right_leaf = %p, underfull_leaf = %p, parent_key_index = %d)\n", bpt, left_leaf, right_leaf, underfull_leaf, parent_key_index);
+	printf("bptree_leaf_redistribute_or_merge: left_leaf->used = %d, right_leaf->used = %d\n", left_leaf->used, right_leaf->used);
+	printf("left:\n");
+	bptree_leaf_print(bpt, left_leaf);
+	printf("\n");
+	printf("right:\n");
+	bptree_leaf_print(bpt, right_leaf);
+	printf("\n");
+#endif
 	int leaf_minimum_keys = ceil((float)(bpt->nkeys - 1) / 2);
 	if (left_leaf->used + right_leaf->used < bpt->nkeys){
 		// merge
+		printf("merge\n");
+		for(int i = 0; i < right_leaf->used; i++){
+			printf("left_leaf->used = %d, right_leaf->used = %d, i = %d\n", left_leaf->used, right_leaf->used, i);
+			left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
+			left_leaf->children[left_leaf->used] = right_leaf->children[i];
+			left_leaf->used += 1;
+		}
+		left_leaf->children[bpt->nkeys] = right_leaf->children[bpt->nkeys];
+		
+		// propagate to parent node
+		bptree_node_delete(bpt, right_leaf->parent, right_leaf->keys[0], right_leaf);
+		
+		// if root node is empty, then free it
+		if (right_leaf->parent == bpt->root){
+			if (bpt->root->used == 0){
+				bptree_node_destroy(bpt->root);
+				bpt->root = left_leaf;
+				bpt->root->parent = NULL;
+				bpt->root->children[bpt->nkeys] = NULL;
+			}
+		}
+		
+		// free merged node
+		bptree_node_destroy(right_leaf);
+		return;
 	} else {
 		// redistribute pointers
 		int need_keys = leaf_minimum_keys - underfull_leaf->used;
+		printf("need_keys: %d\n", need_keys);
 		if (need_keys <= 0){
 			// nothing to do
 			return;
@@ -370,18 +413,24 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 			for(int i = 0; i < need_keys; i++){
 				left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
 				left_leaf->children[left_leaf->used] = right_leaf->children[i];
-				right_leaf->keys[i] = right_leaf->keys[i + 1];
-				right_leaf->children[i] = right_leaf->keys[i + 1];
 				left_leaf->used += 1;
-				right_leaf->used -= 1;
 			}
+			// shift data {need_keys} times on right_leaf
+			for(int i = 0; i < right_leaf->used - need_keys; i++){
+				right_leaf->keys[i] = right_leaf->keys[i + need_keys];
+				right_leaf->children[i] = right_leaf->children[i + need_keys];
+			}
+			right_leaf->used -= need_keys;
 		} else {
+			// shift data
+			for(int i = 0; i < right_leaf->used; i++){
+				right_leaf->keys[right_leaf->used + need_keys - i] = right_leaf->keys[right_leaf->used + need_keys - i - 1];
+				right_leaf->children[right_leaf->used + need_keys - i] = right_leaf->children[right_leaf->used + need_keys - i - 1];
+			}
 			// data moves from left to right
 			for(int i = 0; i < need_keys; i++){
-				right_leaf->keys[need_keys - i + 1] = right_leaf->keys[need_keys - i];
-				right_leaf->children[need_keys - i + 1] = right_leaf->children[need_keys - i];
-				right_leaf->keys[need_keys - i] = left_leaf->keys[left_leaf->used];
-				right_leaf->children[need_keys - i] = left_leaf->children[left_leaf->used];
+				right_leaf->keys[i] = left_leaf->keys[left_leaf->used];
+				right_leaf->children[i] = left_leaf->children[left_leaf->used];
 				left_leaf->used -= 1;
 				right_leaf->used += 1;
 			}
@@ -418,15 +467,22 @@ void bptree_leaf_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
 			// redistribute or merge from adjacent leaf
 			// first, look up the parent node and then find adjacent leaf and key
 			int idx = bptree_node_ptr_index(bpt, leaf->parent, leaf);
+#ifdef DEBUG
+			printf("bptree_leaf_delete: merge or redistribute needed.\n");
+			printf("bptree_leaf_delete: leaf->parent->used = %d, idx of ptr on parent = %d\n", leaf->parent->used, idx);
+#endif
 			if (idx < leaf->parent->used){
+				printf("-------------\n");
 				// look right sibling
-				bptree_node_t *affected = leaf->parent->children[idx];
-				bptree_leaf_redistribute_or_merge(bpt, affected, leaf, leaf, idx);
+				bptree_node_t *affected = leaf->parent->children[idx + 1];
+				bptree_leaf_redistribute_or_merge(bpt, leaf, affected, leaf, idx);
 			} else {
 				// pointer found in the most right of children
 				// then look left sibling
+				printf("##########\n");
+				printf("right\n");
 				bptree_node_t *affected = leaf->parent->children[idx - 1];
-				bptree_leaf_redistribute_or_merge(bpt, leaf, affected, leaf, idx - 1);
+				bptree_leaf_redistribute_or_merge(bpt, affected, leaf, leaf, idx - 1);
 			}
 			return;
 		}
