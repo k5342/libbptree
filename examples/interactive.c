@@ -20,6 +20,15 @@ int main(int argc, char *argv[]){
 			bptree_print(bpt);
 			goto next;
 		}
+		if (strncmp(t, "d", 1) == 0
+			strncmp(t, "del", 3) == 0
+			|| strncmp(t, "delete", 6) == 0){
+			t = strtok(NULL, " ");
+			bptree_key_t key = (bptree_key_t)strtol(t, NULL, 10);
+			bptree_delete(bpt, key);
+			bptree_print(bpt);
+			goto next;
+		}
 		if (strncmp(t, "show", 4) == 0){
 			bptree_print(bpt);
 			goto next;
