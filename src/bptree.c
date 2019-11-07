@@ -343,12 +343,12 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bp
 			if (idx < node->parent->used){
 				// look right sibling
 				bptree_node_t *affected = node->parent->children[idx];
-				bptree_node_redistribute_or_merge(bpt, affected, node, node, idx);
+				bptree_leaf_redistribute_or_merge(bpt, affected, node, node, idx);
 			} else {
 				// pointer found in the most right of children
 				// then look left sibling
 				bptree_node_t *affected = node->parent->children[idx - 1];
-				bptree_node_redistribute_or_merge(bpt, node, affected, node, idx - 1);
+				bptree_leaf_redistribute_or_merge(bpt, node, affected, node, idx - 1);
 			}
 		}
 	}
