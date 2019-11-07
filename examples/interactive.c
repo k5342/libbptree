@@ -12,7 +12,8 @@ int main(int argc, char *argv[]){
 	printf("> ");
 	while (fgets(buffer, 256, stdin) != NULL){
 		char *t = strtok(buffer, " ");
-		if (strncmp(t, "put", 3) == 0){
+		if (strncmp(t, "p", 1) == 0
+			|| strncmp(t, "put", 3) == 0){
 			t = strtok(NULL, " ");
 			bptree_key_t key = (bptree_key_t)strtol(t, NULL, 10);
 			bptree_insert(bpt, key, NULL);
