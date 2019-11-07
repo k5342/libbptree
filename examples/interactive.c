@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
 			bptree_key_t key = (bptree_key_t)strtol(t, NULL, 10);
 			bptree_insert(bpt, key, NULL);
 			bptree_print(bpt);
-			goto finalize;
+			goto next;
 		}
 		if (strncmp(t, "show", 4) == 0){
 			bptree_print(bpt);
