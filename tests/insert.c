@@ -2,8 +2,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const int data_counts = 11;
+
 int hash(int n){
-	return (n * 23 + 41) % 10000;
+	return 0;
+}
+
+int check(bptree_t *bpt, int *vals){
+	for (int i = 0; i < data_counts; i++){
+		int status;
+		int *v = bptree_search(bpt, (bptree_key_t)i, &status);
+		if (status){
+			if (v == &vals[i]){
+				// ok
+			} else {
+				printf("(%d/%d) ERROR / found = %p (= %d), correct = %d\n", i, data_counts, v, *v, vals[i]);
+			}
+		} else {
+			printf("(%d/%d) ERROR / not found = %d\n", i, data_counts, hash(i));
+		}
+	}
+	printf("test success.\n");
 }
 
 int main(int argc, char *argv[]){
@@ -12,31 +31,40 @@ int main(int argc, char *argv[]){
 		bptree_perror("bptree_init returned NULL");
 		return -1;
 	}
-	int data_counts = 10000;
 	
 	// initialize values
 	int *vals = calloc(data_counts, sizeof(int));
-	for (int i = 0; i < data_counts; i++){
-		vals[i] = hash(i);
-	}
 	
-	// insert in random order
+	printf("insert in ascending order\n");
+	printf("insert ...");
 	for (int i = 0; i < data_counts; i++){
-		printf("(%d/%d) insert (%d, %p) = %d\n", i, data_counts, hash(i), &vals[i], vals[i]);
-		bptree_insert(bpt, (bptree_key_t)hash(i), &vals[i]);
+		vals[i] = i;
+		bptree_insert(bpt, (bptree_key_t)i, &vals[i]);
 	}
+	printf("done\n");
+	bptree_print(bpt);
+	printf("check ...\n");
+	check(bpt, vals);
+	
+	printf("insert in random order\n");
+	printf("insert ...");
 	for (int i = 0; i < data_counts; i++){
-		int status;
-		int *v = bptree_search(bpt, (bptree_key_t)hash(i), &status);
-		if (status && hash(i) == vals[i]){
-			printf("(%d/%d) pass.\n", i, data_counts);
-		} else {
-			printf("(%d/%d) ERROR. / status = %d, found = %p (= %d), correct = %d\n", i, data_counts, status, v, *v, vals[i]);
-			bptree_free(bpt);
-			return -1;
+		for (int j = 0;; j++){
+			int status;
+			bptree_search(bpt, (bptree_key_t)hash(i) + j, &status);
+			if (status == 0){
+				vals[i] = hash(i) + j;
+				bptree_insert(bpt, (bptree_key_t)hash(i) + j, &vals[i]);
+				break;
+			}
 		}
 	}
-	printf("test success.");
+	printf("done\n");
+	bptree_print(bpt);
+	printf("check ...\n");
+	check(bpt, vals);
+	
 	bptree_free(bpt);
+	
 	return 0;
 }
