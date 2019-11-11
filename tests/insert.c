@@ -2,69 +2,107 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const int data_counts = 11;
+const int data_counts = 20;
 
-int hash(int n){
-	return 0;
+typedef struct _context {
+	bptree_t *bpt;
+	int *values;
+	int npassed;
+	int nfailed;
+} context;
+
+context *create_context(int size){
+	context *c = malloc(sizeof(context));
+	c->bpt = bptree_init(size);
+	c->values = calloc(data_counts, sizeof(int));
+	c->npassed = 0;
+	c->nfailed = 0;
+	return c;
 }
 
-int check(bptree_t *bpt, int *vals){
+void *destroy_context(context *c){
+	bptree_free(c->bpt);
+	free(c);
+}
+
+void do_test(char *print_string, void (*prepare)(context *c), void (*verify)(context *c)){
+	context *c = create_context(10);
+	
+	printf("[TEST] %s\n", print_string);
+	prepare(c);
+	verify(c);
+	
+	if (c->nfailed == 0){
+		printf("Result: PASSED - ");
+	} else {
+		printf("Result: FAILED - ");
+	}
+	printf("passed: %d, failed: %d\n", c->npassed, c->nfailed);
+	if (c->nfailed != 0){
+		bptree_print(c->bpt);
+	}
+}
+
+int lcg(int prev, int n){
+	return (prev * 3 + 41) % n;
+}
+
+int check_search(context *c){
 	for (int i = 0; i < data_counts; i++){
 		int status;
-		int *v = bptree_search(bpt, (bptree_key_t)i, &status);
+		int *v = bptree_search(c->bpt, (bptree_key_t)i, &status);
 		if (status){
-			if (v == &vals[i]){
+			if (v == &c->values[i]){
 				// ok
+				c->npassed += 1;
 			} else {
-				printf("(%d/%d) ERROR / found = %p (= %d), correct = %d\n", i, data_counts, v, *v, vals[i]);
+				printf("(%d/%d) ERROR / found = %p, correct = %p\n", i, data_counts, v, &c->values[i]);
+				c->nfailed += 1;
 			}
 		} else {
-			printf("(%d/%d) ERROR / not found = %d\n", i, data_counts, hash(i));
+			printf("(%d/%d) ERROR / not found\n", i, data_counts);
+			c->nfailed += 1;
 		}
 	}
-	printf("test success.\n");
 }
 
-int main(int argc, char *argv[]){
-	bptree_t *bpt = bptree_init(10);
-	if (bpt == NULL){
-		bptree_perror("bptree_init returned NULL");
-		return -1;
-	}
-	
-	// initialize values
-	int *vals = calloc(data_counts, sizeof(int));
-	
-	printf("insert in ascending order\n");
-	printf("insert ...");
+void insert_in_asc(context *c){
 	for (int i = 0; i < data_counts; i++){
-		vals[i] = i;
-		bptree_insert(bpt, (bptree_key_t)i, &vals[i]);
+		bptree_insert(c->bpt, (bptree_key_t)i, &c->values[i]);
 	}
-	printf("done\n");
-	bptree_print(bpt);
-	printf("check ...\n");
-	check(bpt, vals);
-	
-	printf("insert in random order\n");
-	printf("insert ...");
+}
+
+void insert_in_desc(context *c){
+	for (int i = data_counts; i > 0; i--){
+		bptree_insert(c->bpt, (bptree_key_t)i, &c->values[i]);
+	}
+}
+
+void insert_in_random(context *c){
+	int r = lcg(51, data_counts);
 	for (int i = 0; i < data_counts; i++){
+		r = lcg(r, data_counts);
 		for (int j = 0;; j++){
 			int status;
-			bptree_search(bpt, (bptree_key_t)hash(i) + j, &status);
+			bptree_search(c->bpt, (bptree_key_t)r + j, &status);
 			if (status == 0){
-				vals[i] = hash(i) + j;
-				bptree_insert(bpt, (bptree_key_t)hash(i) + j, &vals[i]);
+				bptree_insert(c->bpt, (bptree_key_t)r + j, &c->values[i]);
 				break;
 			}
 		}
 	}
-	printf("done\n");
-	bptree_print(bpt);
-	printf("check ...\n");
-	check(bpt, vals);
+}
+
+void verify(context *c){
+	check_search(c);
+}
+
+int main(int argc, char *argv[]){
+	printf("libptree test: insert\n");
 	
-	bptree_free(bpt);
+	do_test("insert in ascending order", insert_in_asc, verify);
+	do_test("insert in descending order", insert_in_desc, verify);
+	do_test("insert in random order", insert_in_random, verify);
 	
 	return 0;
 }
