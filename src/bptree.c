@@ -11,10 +11,10 @@ void bptree_perror(char *s){
 void bptree_leaf_print(bptree_t *bpt, bptree_node_t *leaf){
 	printf("{");
 	if (leaf->used > 0){
-		for(int i = 0; i < leaf->used - 1; i++){
-			printf("%lld ", leaf->keys[i]);
+		for(int i = 0; i < leaf->used; i++){
+			printf("%p %lld ", leaf->children[i], leaf->keys[i]);
 		}
-		printf("%lld", leaf->keys[leaf->used - 1]);
+		printf("%p", leaf->children[leaf->used]);
 	}
 	printf("}");
 }
@@ -111,7 +111,7 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 		printf("divide root: used = %d\n", l_child->used);
 #endif
 		bptree_node_t *new_root = bptree_node_create(bpt);
-		new_root->keys[0] = r_child->keys[0];
+		new_root->keys[0] = key;
 		new_root->children[0] = l_child;
 		new_root->children[1] = r_child;
 		new_root->used = 1;
@@ -127,8 +127,7 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 #endif
 	if (dst_node->used + 1 <= bpt->nkeys){
 		// shift and insert
-//		  bptree_node_print(bpt, dst_node);
-		for (int i = dst_node->used; i > insert_index; i--){
+		for (int i = dst_node->used + 1; i > insert_index; i--){
 			dst_node->keys[i] = dst_node->keys[i - 1];
 			dst_node->children[i + 1] = dst_node->children[i];
 		}
@@ -142,65 +141,64 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 #ifdef DEBUG
 		printf("divide node\n");
 #endif
-		bptree_node_t *tmp_children[bpt->nkeys + 1]; // TODO: optimize this
+		bptree_node_t *tmp_children[bpt->nkeys + 1 + 1]; // TODO: optimize this
 		bptree_key_t tmp_keys[bpt->nkeys + 1];
 		
-		for (int i = bpt->nkeys + 1; i > insert_index; i--){
-			tmp_keys[i] = dst_node->keys[i - 1];
-			tmp_children[i + 1] = dst_node->children[i];
-		}
+		// insert key into temp node
 		for (int i = 0; i < insert_index; i++){
 			tmp_keys[i] = dst_node->keys[i];
+		}
+		tmp_keys[insert_index] = key;
+		for (int i = insert_index; i < dst_node->used; i++){
+			// shift +1 after the key insertion
+			tmp_keys[i + 1] = dst_node->keys[i];
+		}
+		
+		// insert r_child into temp node
+		// it should be careful the r_child insertion on internal node is occurred at insert_index + 1
+		// because key ensures the maximum key in children[i] is less than key[i]
+		for (int i = 0; i < insert_index + 1; i++){
 			tmp_children[i] = dst_node->children[i];
 		}
-		tmp_children[insert_index] = dst_node->children[insert_index];
-		
-		// insert
-		tmp_keys[insert_index] = key;
 		tmp_children[insert_index + 1] = r_child;
-		
-//		  // debug
-//		  for(int i = 0; i < dst_node->used + 1; i++){
-//			  printf("children[%d]: ", i);
-//			  bptree_node_print(bpt, tmp_children[i]);
-//			  printf("\n");
-//			  printf("keys[%d]: %d", i, tmp_keys[i]);
-//			  printf("\n");
-//		  }
-//		  bptree_node_print(bpt, tmp_children[dst_node->used + 1]);
-//		  printf("\n");
+		for (int i = insert_index + 1; i < dst_node->used + 1; i++){
+			tmp_children[i + 1] = dst_node->children[i];
+		}
 		
 		// divide into left and right node
+		// first, create right node
 		bptree_node_t *new = bptree_node_create(bpt);
 		
-		int _mdl = ceil((float)(bpt->nkeys + 1) / 2);
+		int median_index = (bpt->nkeys + 1) / 2;
+		int divide_left_nkeys = median_index;
+		int divide_right_nkeys = (bpt->nkeys + 1) - median_index - 1;
 		
-		// copy from temp node
+		// copy from temp node to left node
 		dst_node->used = 0;
-		for(int i = 0; i < _mdl; i++){
+		for(int i = 0; i < divide_left_nkeys; i++){
 			dst_node->keys[i] = tmp_keys[i];
 			dst_node->children[i] = tmp_children[i];
 			dst_node->used += 1;
 		}
-		dst_node->children[_mdl] = tmp_children[_mdl];
-//		  bptree_node_print(bpt, dst_node);
+		dst_node->children[divide_left_nkeys] = tmp_children[divide_left_nkeys];
 		
+		// copy from temp node to right (new) node
 		new->used = 0;
-		for(int i = _mdl + 1; i < bpt->nkeys + 1; i++){
-			new->keys[i - _mdl - 1] = tmp_keys[i];
-			new->children[i - _mdl - 1] = tmp_children[i];
+		for(int i = 0; i < divide_right_nkeys; i++){
+			new->keys[i] = tmp_keys[i + median_index + 1];
+			new->children[i] = tmp_children[i + median_index + 1];
 			new->used += 1;
 		}
-		new->children[bpt->nkeys + 1 - _mdl - 1] = tmp_children[bpt->nkeys + 1];
-		//bptree_node_print(bpt, new);
+		new->children[divide_right_nkeys] = tmp_children[divide_right_nkeys + median_index + 1];
 		
-		if (insert_index < _mdl){
+		// set r_child->parent which determined by the value of median_index
+		if (insert_index < median_index){
 			r_child->parent = dst_node;
 		} else {
 			r_child->parent = new;
 		}
 		
-		bptree_node_insert(bpt, dst_node, tmp_keys[_mdl], new);
+		bptree_node_insert(bpt, dst_node, tmp_keys[median_index], new);
 		return;
 	}
 }
@@ -214,7 +212,7 @@ bptree_node_t *bptree_leaf_search(bptree_t *bpt, bptree_key_t key){
 		int idx;
 		for (idx = 0; idx < current->used; idx++){
 #ifdef DEBUG
-			printf("comp: %d > %d\n", current->keys[idx], key);
+			printf("comp: %lld > %lld\n", current->keys[idx], key);
 #endif
 			if (current->keys[idx] > key){
 				break;
@@ -240,20 +238,21 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 #ifdef DEBUG
 		printf("divide leaf: key = %lld\n", key);
 #endif
-		// copy temp node
+		// create temp node for leaf separation
 		bptree_node_t *tmp_children[bpt->nkeys + 1]; // TODO: optimize this
 		bptree_key_t tmp_keys[bpt->nkeys + 1];
 		
-		for (int i = bpt->nkeys + 1; i > insert_index; i--){
-			tmp_keys[i] = leaf->keys[i - 1];
-			tmp_children[i + 1] = leaf->children[i];
-		}
+		// insert into temp node
 		for (int i = 0; i < insert_index; i++){
 			tmp_keys[i] = leaf->keys[i];
 			tmp_children[i] = leaf->children[i];
 		}
 		tmp_keys[insert_index] = key;
-		tmp_children[insert_index + 1] = (bptree_node_t *)value;
+		tmp_children[insert_index] = (bptree_node_t *)value;
+		for (int i = insert_index; i < leaf->used; i++){
+			tmp_keys[i + 1] = leaf->keys[i];
+			tmp_children[i + 1] = leaf->children[i];
+		}
 		
 		// divide into left and right node
 		bptree_node_t *new = bptree_leaf_create(bpt);
