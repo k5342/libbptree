@@ -240,20 +240,21 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 #ifdef DEBUG
 		printf("divide leaf: key = %lld\n", key);
 #endif
-		// copy temp node
+		// create temp node for leaf separation
 		bptree_node_t *tmp_children[bpt->nkeys + 1]; // TODO: optimize this
 		bptree_key_t tmp_keys[bpt->nkeys + 1];
 		
-		for (int i = bpt->nkeys + 1; i > insert_index; i--){
-			tmp_keys[i] = leaf->keys[i - 1];
-			tmp_children[i + 1] = leaf->children[i];
-		}
+		// insert into temp node
 		for (int i = 0; i < insert_index; i++){
 			tmp_keys[i] = leaf->keys[i];
 			tmp_children[i] = leaf->children[i];
 		}
 		tmp_keys[insert_index] = key;
-		tmp_children[insert_index + 1] = (bptree_node_t *)value;
+		tmp_children[insert_index] = (bptree_node_t *)value;
+		for (int i = insert_index; i < leaf->used; i++){
+			tmp_keys[i + 1] = leaf->keys[i];
+			tmp_children[i + 1] = leaf->children[i];
+		}
 		
 		// divide into left and right node
 		bptree_node_t *new = bptree_leaf_create(bpt);
