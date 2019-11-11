@@ -11,10 +11,10 @@ void bptree_perror(char *s){
 void bptree_leaf_print(bptree_t *bpt, bptree_node_t *leaf){
 	printf("{");
 	if (leaf->used > 0){
-		for(int i = 0; i < leaf->used - 1; i++){
-			printf("%lld ", leaf->keys[i]);
+		for(int i = 0; i < leaf->used; i++){
+			printf("%p %lld ", leaf->children[i], leaf->keys[i]);
 		}
-		printf("%lld", leaf->keys[leaf->used - 1]);
+		printf("%p", leaf->children[leaf->used]);
 	}
 	printf("}");
 }
