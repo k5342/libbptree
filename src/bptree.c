@@ -214,7 +214,7 @@ bptree_node_t *bptree_leaf_search(bptree_t *bpt, bptree_key_t key){
 		int idx;
 		for (idx = 0; idx < current->used; idx++){
 #ifdef DEBUG
-			printf("comp: %d > %d\n", current->keys[idx], key);
+			printf("comp: %lld > %lld\n", current->keys[idx], key);
 #endif
 			if (current->keys[idx] > key){
 				break;
