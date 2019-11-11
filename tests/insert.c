@@ -25,7 +25,7 @@ void *destroy_context(context *c){
 	free(c);
 }
 
-void do_test(char *print_string, void (*prepare)(context *c), void (*verify)(context *c)){
+int do_test(char *print_string, void (*prepare)(context *c), void (*verify)(context *c)){
 	context *c = create_context(10);
 	
 	printf("[TEST] %s\n", print_string);
@@ -38,8 +38,11 @@ void do_test(char *print_string, void (*prepare)(context *c), void (*verify)(con
 		printf("Result: FAILED - ");
 	}
 	printf("passed: %d, failed: %d\n", c->npassed, c->nfailed);
-	if (c->nfailed != 0){
+	if (c->nfailed == 0){
+		return 0;
+	} else {
 		bptree_print(c->bpt);
+		return 1;
 	}
 }
 
@@ -100,9 +103,16 @@ void verify(context *c){
 int main(int argc, char *argv[]){
 	printf("libptree test: insert\n");
 	
-	do_test("insert in ascending order", insert_in_asc, verify);
-	do_test("insert in descending order", insert_in_desc, verify);
-	do_test("insert in random order", insert_in_random, verify);
+	int is_failed = 0;
+	is_failed |= do_test("insert in ascending order", insert_in_asc, verify);
+	is_failed |= do_test("insert in descending order", insert_in_desc, verify);
+	is_failed |= do_test("insert in random order", insert_in_random, verify);
 	
-	return 0;
+	printf("Overall Result: ");
+	if (is_failed){
+		printf("FAILED\n");
+	} else {
+		printf("PASSED\n");
+	}
+	return is_failed;
 }
