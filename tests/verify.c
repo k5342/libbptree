@@ -155,13 +155,15 @@ int verify_tree(context *c){
 
 void insert_in_asc(context *c){
 	for (int i = 0; i < data_counts; i++){
-		bptree_insert(c->bpt, (bptree_key_t)i, &c->values[i]);
+		c->values[i] = i;
+		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 	}
 }
 
 void insert_in_desc(context *c){
 	for (int i = data_counts - 1; i >= 0; i--){
-		bptree_insert(c->bpt, (bptree_key_t)i, &c->values[i]);
+		c->values[i] = i;
+		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 	}
 }
 
@@ -173,7 +175,8 @@ void insert_in_random(context *c){
 			int status;
 			bptree_search(c->bpt, (bptree_key_t)r + j, &status);
 			if (status == 0){
-				bptree_insert(c->bpt, (bptree_key_t)r + j, &c->values[i]);
+				c->values[i] = r + j;
+				bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 				break;
 			}
 		}
