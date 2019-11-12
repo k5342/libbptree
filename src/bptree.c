@@ -229,7 +229,7 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 		// shift and insert
 		for (int i = leaf->used; i > insert_index; i--){
 			leaf->keys[i] = leaf->keys[i - 1];
-			leaf->children[i + 1] = leaf->children[i];
+			leaf->children[i] = leaf->children[i - 1];
 		}
 		leaf->keys[insert_index] = key;
 		leaf->children[insert_index] = (bptree_node_t *)value;
