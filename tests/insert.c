@@ -76,7 +76,7 @@ void insert_in_asc(context *c){
 }
 
 void insert_in_desc(context *c){
-	for (int i = data_counts; i > 0; i--){
+	for (int i = data_counts - 1; i >= 0; i--){
 		bptree_insert(c->bpt, (bptree_key_t)i, &c->values[i]);
 	}
 }
