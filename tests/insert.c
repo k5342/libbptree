@@ -53,17 +53,17 @@ int lcg(int prev, int n){
 int check_search(context *c){
 	for (int i = 0; i < data_counts; i++){
 		int status;
-		int *v = bptree_search(c->bpt, (bptree_key_t)i, &status);
+		int *v = bptree_search(c->bpt, (bptree_key_t)c->values[i], &status);
 		if (status){
 			if (v == &c->values[i]){
 				// ok
 				c->npassed += 1;
 			} else {
-				printf("(%d/%d) ERROR / found = %p, correct = %p\n", i, data_counts, v, &c->values[i]);
+				printf("(%d/%d) ERROR / key = %d, found = %p, correct = %p\n", i, data_counts, c->values[i], v, &c->values[i]);
 				c->nfailed += 1;
 			}
 		} else {
-			printf("(%d/%d) ERROR / not found\n", i, data_counts);
+			printf("(%d/%d) ERROR / key = %d, not found\n", i, data_counts, c->values[i]);
 			c->nfailed += 1;
 		}
 	}
@@ -71,13 +71,15 @@ int check_search(context *c){
 
 void insert_in_asc(context *c){
 	for (int i = 0; i < data_counts; i++){
-		bptree_insert(c->bpt, (bptree_key_t)i, &c->values[i]);
+		c->values[i] = i;
+		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 	}
 }
 
 void insert_in_desc(context *c){
 	for (int i = data_counts - 1; i >= 0; i--){
-		bptree_insert(c->bpt, (bptree_key_t)i, &c->values[i]);
+		c->values[i] = i;
+		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 	}
 }
 
@@ -89,7 +91,8 @@ void insert_in_random(context *c){
 			int status;
 			bptree_search(c->bpt, (bptree_key_t)r + j, &status);
 			if (status == 0){
-				bptree_insert(c->bpt, (bptree_key_t)r + j, &c->values[i]);
+				c->values[i] = r + j;
+				bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 				break;
 			}
 		}
