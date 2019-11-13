@@ -1,18 +1,12 @@
 #include <bptree.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "testutils.h"
 
 const int data_counts = 200;
 
-typedef struct _context {
-	bptree_t *bpt;
-	int *values;
-	int npassed;
-	int nfailed;
-} context;
-
-context *create_context(int size){
-	context *c = malloc(sizeof(context));
+bptree_test_context *bptree_create_test_context(int size){
+	bptree_test_context *c = malloc(sizeof(bptree_test_context));
 	c->bpt = bptree_init(size);
 	c->values = calloc(data_counts, sizeof(int));
 	c->npassed = 0;
@@ -20,13 +14,15 @@ context *create_context(int size){
 	return c;
 }
 
-void *destroy_context(context *c){
+void *bptree_destroy_context(bptree_test_context *c){
 	bptree_free(c->bpt);
 	free(c);
 }
 
-int do_test(char *print_string, void (*prepare)(context *c), void (*verify)(context *c)){
-	context *c = create_context(10);
+bptree_test_result do_test(char *print_string, 
+		bptree_test_result (*prepare)(bptree_test_context *c), 
+		bptree_test_result (*verify)(bptree_test_context *c)){
+	bptree_test_context *c = bptree_create_test_context(10);
 	
 	printf("[TEST] %s\n", print_string);
 	prepare(c);
@@ -50,7 +46,7 @@ int lcg(int prev, int n){
 	return (prev * 3 + 41) % n;
 }
 
-void check_search(context *c){
+bptree_test_result check_search(bptree_test_context *c){
 	for (int i = 0; i < data_counts; i++){
 		int status;
 		int *v = bptree_search(c->bpt, (bptree_key_t)c->values[i], &status);
@@ -67,23 +63,30 @@ void check_search(context *c){
 			c->nfailed += 1;
 		}
 	}
+	if (c->nfailed > 0){
+		return BPTREE_TEST_FAILED;
+	} else {
+		return BPTREE_TEST_PASSED;
+	}
 }
 
-void insert_in_asc(context *c){
+bptree_test_result insert_in_asc(bptree_test_context *c){
 	for (int i = 0; i < data_counts; i++){
 		c->values[i] = i;
 		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 	}
+	return BPTREE_TEST_PASSED;
 }
 
-void insert_in_desc(context *c){
+bptree_test_result insert_in_desc(bptree_test_context *c){
 	for (int i = data_counts - 1; i >= 0; i--){
 		c->values[i] = i;
 		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 	}
+	return BPTREE_TEST_PASSED;
 }
 
-void insert_in_random(context *c){
+bptree_test_result insert_in_random(bptree_test_context *c){
 	int r = lcg(51, data_counts);
 	for (int i = 0; i < data_counts; i++){
 		r = lcg(r, data_counts);
@@ -97,5 +100,6 @@ void insert_in_random(context *c){
 			}
 		}
 	}
+	return BPTREE_TEST_PASSED;
 }
 

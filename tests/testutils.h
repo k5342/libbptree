@@ -1,22 +1,34 @@
 const int data_counts;
 
-typedef struct _context {
+typedef enum _bptree_test_result {
+	BPTREE_TEST_PASSED,
+	BPTREE_TEST_FAILED,
+} bptree_test_result;
+
+typedef enum _bptree_error_type {
+	BPTREE_ERROR_FATAL,
+	BPTREE_ERROR_WARN,
+} bptree_error_type;
+
+typedef struct _bptree_test_context {
 	bptree_t *bpt;
 	int *values;
 	int npassed;
 	int nfailed;
-} context;
+} bptree_test_context;
 
-context *create_context(int size);
-void *destroy_context(context *c);
+bptree_test_context *bptree_create_test_context(int size);
+void *bptree_destroy_test_context(bptree_test_context *c);
 
-int do_test(char *print_string, void (*prepare)(context *c), void (*verify)(context *c));
+bptree_test_result do_test(char *print_string, 
+		bptree_test_result (*prepare)(bptree_test_context *c), 
+		bptree_test_result (*verify)(bptree_test_context *c));
 
 int lcg(int prev, int n);
 
-void check_search(context *c);
+bptree_test_result check_search(bptree_test_context *c);
 
-void insert_in_asc(context *c);
-void insert_in_desc(context *c);
-void insert_in_random(context *c);
+bptree_test_result insert_in_asc(bptree_test_context *c);
+bptree_test_result insert_in_desc(bptree_test_context *c);
+bptree_test_result insert_in_random(bptree_test_context *c);
 
