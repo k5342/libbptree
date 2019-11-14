@@ -8,15 +8,15 @@ int main(int argc, char *argv[]){
 	
 	int is_failed = 0;
 	if (do_test("insert in ascending order",
-				insert_in_asc, check_search) == BPTREE_TEST_FAILED){
+				insert_in_asc, verify_tree) == BPTREE_TEST_FAILED){
 		is_failed |= 1;
 	}
 	if (do_test("insert in descending order",
-				insert_in_desc, check_search) == BPTREE_TEST_FAILED){
+				insert_in_desc, verify_tree) == BPTREE_TEST_FAILED){
 		is_failed |= 1;
 	}
 	if (do_test("insert in random order",
-				insert_in_random, check_search) == BPTREE_TEST_FAILED){
+				insert_in_random, verify_tree) == BPTREE_TEST_FAILED){
 		is_failed |= 1;
 	}
 	
