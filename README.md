@@ -1,5 +1,5 @@
 ## libbptree
-![](https://github.com/k5342/libbptree/workflows/test/badge.svg)
+![](https://github.com/k5342/libbptree/workflows/test/badge.svg?dummy=unused)
 
 ### Requirements
 - -std=c99 support
