@@ -197,7 +197,7 @@ bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bpt
 			c->nfailed += 1;
 			return BPTREE_TEST_FAILED;
 		}
-		return 0;
+		return BPTREE_TEST_PASSED;
 	}
 }
 
