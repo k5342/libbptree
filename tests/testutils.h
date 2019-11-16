@@ -20,6 +20,7 @@ typedef struct _bptree_test_context {
 bptree_test_context *bptree_create_test_context(int size);
 void *bptree_destroy_test_context(bptree_test_context *c);
 
+void do_single_test(char *test_name, bptree_test_result (*test_func)());
 bptree_test_result do_test(char *print_string, 
 		bptree_test_result (*prepare)(bptree_test_context *c), 
 		bptree_test_result (*verify)(bptree_test_context *c));

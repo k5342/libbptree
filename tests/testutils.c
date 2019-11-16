@@ -19,6 +19,17 @@ void *bptree_destroy_context(bptree_test_context *c){
 	free(c);
 }
 
+void do_single_test(char *test_name, bptree_test_result (*test_func)()){
+	bptree_test_result r = test_func();
+	if (r == BPTREE_TEST_PASSED){
+		printf("passed - %s\n", test_name);
+		return;
+	} else {
+		printf("failed - %s\n", test_name);
+		exit(1);
+	}
+}
+
 bptree_test_result do_test(char *print_string, 
 		bptree_test_result (*prepare)(bptree_test_context *c), 
 		bptree_test_result (*verify)(bptree_test_context *c)){
