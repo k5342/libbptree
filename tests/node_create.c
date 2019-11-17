@@ -17,6 +17,7 @@ bptree_test_result testcase_check_passed_not_null(){
 	if (bpt != NULL){
 		return BPTREE_TEST_PASSED;
 	}
+	bptree_free(bpt);
 	return BPTREE_TEST_FAILED;
 }
 
