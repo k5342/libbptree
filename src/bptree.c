@@ -69,6 +69,9 @@ bptree_node_t *bptree_node_create(bptree_t *bpt){
 
 bptree_node_t *bptree_leaf_create(bptree_t *bpt){
 	bptree_node_t *leaf = bptree_node_create(bpt);
+	if (leaf == NULL){
+		return NULL;
+	}
 	leaf->is_leaf = true;
 	leaf->children[bpt->nkeys] = NULL;
 	return leaf;
