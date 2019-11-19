@@ -1,6 +1,14 @@
 ## libbptree
 ![](https://github.com/k5342/libbptree/workflows/test/badge.svg?dummy=unused)
 
+### Interface
+```c
+bptree_t *bptree_init(int nkeys);
+void bptree_free(bptree_t *bpt);
+void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value);
+void *bptree_search(bptree_t *bpt, bptree_key_t key, int *status);
+```
+
 ### Requirements
 - -std=c99 support
 - Autotools
