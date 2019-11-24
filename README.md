@@ -31,6 +31,6 @@ make install
 ### TODO
 - [x] Insert
 - [ ] Delete
-- [ ] Write unit tests
+- [ ] Write unit tests (WIP)
 - [ ] Makefile
 - [ ] Refactoring
