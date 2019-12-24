@@ -93,6 +93,10 @@ bptree_test_result insert_in_desc(bptree_test_context *c){
 	for (int i = data_counts - 1; i >= 0; i--){
 		c->values[i] = i;
 		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
+		if (verify_tree(c) == BPTREE_TEST_FAILED){
+			return BPTREE_TEST_FAILED;
+		}
+		bptree_print(c->bpt);
 	}
 	return BPTREE_TEST_PASSED;
 }
@@ -114,7 +118,7 @@ bptree_test_result insert_in_random(bptree_test_context *c){
 	return BPTREE_TEST_PASSED;
 }
 
-bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bptree_key_t *max_key){
+bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bptree_node_t *node_parent, bptree_key_t *max_key){
 	if (node == NULL){
 		printf("Error: Passed pointer of node is NULL\n");
 		c->nfailed += 1;
@@ -125,6 +129,22 @@ bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bpt
 		c->npassed += 1;
 	} else {
 		printf("Error: node->used must be greater than zero\n");
+		c->nfailed += 1;
+		return BPTREE_TEST_FAILED;
+	}
+	if (node->parent == node_parent){
+		c->npassed += 1;
+	} else {
+		printf("Error: node->parent is not correct (expected %p, but %p)\n", node_parent, node->parent);
+		printf("node: \n");
+		bptree_leaf_print(c->bpt, node);
+		printf("\n");
+		printf("expected: \n");
+		bptree_leaf_print(c->bpt, node_parent);
+		printf("\n");
+		printf("actual: \n");
+		bptree_leaf_print(c->bpt, node->parent);
+		printf("\n");
 		c->nfailed += 1;
 		return BPTREE_TEST_FAILED;
 	}
@@ -165,7 +185,7 @@ bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bpt
 			} else {
 				c->npassed += 1;
 			}
-			int ret = _verify_node(c, node->children[i], max_key);
+			int ret = _verify_node(c, node->children[i], node, max_key);
 			if (ret != 0){
 				printf("Error: _verify_node does not end successfully\n");
 				return BPTREE_TEST_FAILED;
@@ -185,7 +205,7 @@ bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bpt
 		} else {
 			c->npassed += 1;
 		}
-		int ret = _verify_node(c, node->children[node->used], max_key);
+		int ret = _verify_node(c, node->children[node->used], node, max_key);
 		if (ret != 0){
 			printf("Error: _verify_node does not end successfully\n");
 			return BPTREE_TEST_FAILED;
@@ -213,6 +233,6 @@ bptree_test_result verify_tree(bptree_test_context *c){
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_key_t max_key;
-	return _verify_node(c, c->bpt->root, &max_key);
+	return _verify_node(c, c->bpt->root, c->bpt->root->parent, &max_key);
 }
 
