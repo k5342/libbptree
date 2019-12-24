@@ -190,9 +190,11 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 		for(int i = 0; i < divide_right_nkeys; i++){
 			new->keys[i] = tmp_keys[i + median_index + 1];
 			new->children[i] = tmp_children[i + median_index + 1];
+			new->children[i]->parent = new;
 			new->used += 1;
 		}
 		new->children[divide_right_nkeys] = tmp_children[divide_right_nkeys + median_index + 1];
+		new->children[divide_right_nkeys]->parent = new;
 		
 		// set r_child->parent which determined by the value of median_index
 		if (insert_index < median_index){
