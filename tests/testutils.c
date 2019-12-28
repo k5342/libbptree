@@ -59,10 +59,9 @@ int lcg(int prev, int n){
 
 bptree_test_result check_search(bptree_test_context *c){
 	for (int i = 0; i < data_counts; i++){
-		int status;
-		int *v = bptree_search(c->bpt, (bptree_key_t)c->values[i], &status);
-		if (status){
-			if (v == &c->values[i]){
+		void *v;
+		if (bptree_search(c->bpt, (bptree_key_t)c->values[i], &v)){
+			if ((int *)v == &c->values[i]){
 				// ok
 				c->npassed += 1;
 			} else {
@@ -106,9 +105,8 @@ bptree_test_result insert_in_random(bptree_test_context *c){
 	for (int i = 0; i < data_counts; i++){
 		r = lcg(r, data_counts);
 		for (int j = 0;; j++){
-			int status;
-			bptree_search(c->bpt, (bptree_key_t)r + j, &status);
-			if (status == 0){
+			void *v;
+			if (!bptree_search(c->bpt, (bptree_key_t)r + j, &v)){
 				c->values[i] = r + j;
 				bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 				break;
