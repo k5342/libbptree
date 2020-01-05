@@ -12,4 +12,8 @@ int main(int argc, char *argv[]){
 		printf("verify_tree returned fail");
 		return 1;
 	}
+	if (check_search(c) == BPTREE_TEST_FAILED){
+		printf("check_search returned fail");
+		return 1;
+	}
 }
