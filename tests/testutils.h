@@ -1,5 +1,3 @@
-const int data_counts;
-
 typedef enum _bptree_test_result {
 	BPTREE_TEST_PASSED,
 	BPTREE_TEST_FAILED,
@@ -12,18 +10,16 @@ typedef enum _bptree_error_type {
 
 typedef struct _bptree_test_context {
 	bptree_t *bpt;
+	int data_counts;
 	int *values;
 	int npassed;
 	int nfailed;
 } bptree_test_context;
 
-bptree_test_context *bptree_create_test_context(int size);
+bptree_test_context *bptree_create_test_context(int size, int data_counts);
 void *bptree_destroy_test_context(bptree_test_context *c);
 
 void do_single_test(char *test_name, bptree_test_result (*test_func)());
-bptree_test_result do_test(char *print_string, 
-		bptree_test_result (*prepare)(bptree_test_context *c), 
-		bptree_test_result (*verify)(bptree_test_context *c));
 
 int lcg(int prev, int n);
 
