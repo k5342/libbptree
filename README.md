@@ -6,7 +6,7 @@
 bptree_t *bptree_init(int nkeys);
 void bptree_free(bptree_t *bpt);
 void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value);
-void *bptree_search(bptree_t *bpt, bptree_key_t key, int *status);
+int bptree_search(bptree_t *bpt, bptree_key_t key, void *value);
 ```
 
 ### Requirements
