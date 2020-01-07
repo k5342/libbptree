@@ -30,3 +30,4 @@ bptree_test_result insert_in_desc(bptree_test_context *c);
 bptree_test_result insert_in_random(bptree_test_context *c);
 
 bptree_test_result verify_tree(bptree_test_context *c);
+bptree_test_result check_min_or_max(bptree_test_context *c);

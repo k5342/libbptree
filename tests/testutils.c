@@ -233,3 +233,28 @@ bptree_test_result verify_tree(bptree_test_context *c){
 	return _verify_node(c, c->bpt->root, c->bpt->root->parent, &max_key);
 }
 
+bptree_test_result check_min_or_max(bptree_test_context *c){
+	// TODO: hang when any data is inserted
+	
+	// get maximum or minimum value in inserted values
+	bptree_key_t min, max;
+	min = max = c->values[0];
+	for (int i = 1; i < c->data_counts; i++){
+		if (c->values[i] < min){ min = c->values[i]; }
+		if (c->values[i] > max){ max = c->values[i]; }
+	}
+	
+	bptree_node_t *n;
+	n = bptree_leaf_get_leftmost(c->bpt);
+	if (n->keys[0] != min){
+		printf("Error: (bptree_leaf_get_leftmost())->keys[0] is not most smallest value (expected: %lld, actual: %lld)\n", min, n->keys[0]);
+		return BPTREE_TEST_FAILED;
+	}
+	
+	n = bptree_leaf_get_rightmost(c->bpt);
+	if (n->keys[n->used - 1] != max){
+		printf("Error: (bptree_leaf_get_rightmost())->keys[-1] is not most largest value (expected: %lld, actual: %lld)\n", max, n->keys[n->used - 1]);
+		return BPTREE_TEST_FAILED;
+	}
+	return BPTREE_TEST_PASSED;
+}
