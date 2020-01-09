@@ -12,9 +12,11 @@ void bptree_leaf_print(bptree_t *bpt, bptree_node_t *leaf){
 	printf("{");
 	if (leaf->used > 0){
 		for(int i = 0; i < leaf->used; i++){
-			printf("%p %lld ", leaf->children[i], leaf->keys[i]);
+			printf("%p %lld", leaf->children[i], leaf->keys[i]);
+			if (i < leaf->used - 1){
+				printf(" ");
+			}
 		}
-		printf("%p", leaf->children[leaf->used]);
 	}
 	printf("|%p", leaf->children[bpt->nkeys]);
 	printf("}");
