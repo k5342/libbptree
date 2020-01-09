@@ -270,15 +270,17 @@ bptree_test_result check_leaf(bptree_test_context *c){
 	qsort(buf, c->data_counts, sizeof(int), _cmp_asc);
 	
 	bptree_node_t *leaf = bptree_leaf_get_leftmost(c->bpt);
-	while (bptree_leaf_get_key_by_index(c->bpt, leaf, -1) != NULL){
+	int global_index = 0;
+	while (leaf != NULL){
 		for(int i = 0; i < bptree_leaf_get_key_count(c->bpt, leaf); i++){
 			bptree_key_t k = bptree_leaf_get_key_by_index(c->bpt, leaf, i);
-			if (k != (bptree_key_t)buf[i]){
-				printf("Error: key[%d] at leaf:%p is wrong (expected: %lld, actual: %lld)\n", i, leaf, buf[i], k);
+			if (k != (bptree_key_t)buf[global_index]){
+				printf("Error: key[%d] at leaf:%p is wrong (expected: %lld, actual: %lld)\n", i, leaf, buf[global_index], k);
 				return BPTREE_TEST_FAILED;
 			}
+			global_index += 1;
 		}
-		bptree_leaf_get_rightadjecent(c->bpt, leaf);
+		leaf = bptree_leaf_get_rightadjecent(c->bpt, leaf);
 	}
 	return BPTREE_TEST_PASSED;
 }
