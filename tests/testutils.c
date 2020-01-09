@@ -275,7 +275,7 @@ bptree_test_result check_leaf(bptree_test_context *c){
 		for(int i = 0; i < bptree_leaf_get_key_count(c->bpt, leaf); i++){
 			bptree_key_t k = bptree_leaf_get_key_by_index(c->bpt, leaf, i);
 			if (k != (bptree_key_t)buf[global_index]){
-				printf("Error: key[%d] at leaf:%p is wrong (expected: %lld, actual: %lld)\n", i, leaf, buf[global_index], k);
+				printf("Error: key[%d] at leaf:%p is wrong (expected: %lld, actual: %lld)\n", i, leaf, (bptree_key_t)buf[global_index], k);
 				return BPTREE_TEST_FAILED;
 			}
 			global_index += 1;
