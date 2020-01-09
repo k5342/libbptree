@@ -1,6 +1,7 @@
 #include <bptree.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "testutils.h"
 
 bptree_test_context *bptree_create_test_context(int size, int data_counts){
@@ -255,6 +256,29 @@ bptree_test_result check_min_or_max(bptree_test_context *c){
 	if (n->keys[n->used - 1] != max){
 		printf("Error: (bptree_leaf_get_rightmost())->keys[-1] is not most largest value (expected: %lld, actual: %lld)\n", max, n->keys[n->used - 1]);
 		return BPTREE_TEST_FAILED;
+	}
+	return BPTREE_TEST_PASSED;
+}
+
+int _cmp_asc(const void *a, const void *b){
+	return *(int *)a - *(int *)b;
+}
+
+bptree_test_result check_leaf(bptree_test_context *c){
+	int *buf = (int *)calloc(c->data_counts, sizeof(int));
+	memcpy(buf, c->values, sizeof(int) * c->data_counts);
+	qsort(buf, c->data_counts, sizeof(int), _cmp_asc);
+	
+	bptree_node_t *leaf = bptree_leaf_get_leftmost(c->bpt);
+	while (bptree_leaf_get_key_by_index(c->bpt, leaf, -1) != NULL){
+		for(int i = 0; i < bptree_leaf_get_key_count(c->bpt, leaf); i++){
+			bptree_key_t k = bptree_leaf_get_key_by_index(c->bpt, leaf, i);
+			if (k != (bptree_key_t)buf[i]){
+				printf("Error: key[%d] at leaf:%p is wrong (expected: %lld, actual: %lld)\n", i, leaf, buf[i], k);
+				return BPTREE_TEST_FAILED;
+			}
+		}
+		bptree_leaf_get_rightadjecent(c->bpt, leaf);
 	}
 	return BPTREE_TEST_PASSED;
 }
