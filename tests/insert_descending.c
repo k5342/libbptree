@@ -20,4 +20,8 @@ int main(int argc, char *argv[]){
 		printf("check_min_or_max returned fail");
 		return 1;
 	}
+	if (check_leaf(c) == BPTREE_TEST_FAILED){
+		printf("check_leaf returned fail");
+		return 1;
+	}
 }
