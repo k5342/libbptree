@@ -271,7 +271,7 @@ bptree_test_result check_leaf(bptree_test_context *c){
 	
 	bptree_node_t *leaf = bptree_leaf_get_leftmost(c->bpt);
 	int global_index = 0;
-	while (leaf != NULL){
+	do {
 		for(int i = 0; i < bptree_leaf_get_key_count(c->bpt, leaf); i++){
 			bptree_key_t k = bptree_leaf_get_key_by_index(c->bpt, leaf, i);
 			if (k != (bptree_key_t)buf[global_index]){
@@ -281,6 +281,6 @@ bptree_test_result check_leaf(bptree_test_context *c){
 			global_index += 1;
 		}
 		leaf = bptree_leaf_get_rightadjecent(c->bpt, leaf);
-	}
+	} while (leaf != NULL);
 	return BPTREE_TEST_PASSED;
 }
