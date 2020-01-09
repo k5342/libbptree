@@ -6,6 +6,7 @@ The B+-tree is a data structure which is intended to store pairs of a _key_ and 
 ### Types
 - **bptree_t** - Holds a header and pointer to the body of B+-tree. It is an alias to `struct bptree`.
 - **bptree_key_t** - Represents the _key_ of B+-tree. It is an alias to `long long`.
+- **bptree_node_t** - Represents the *internal node* and *leaf* in B+-tree. It is an alias to `struct bptree_node`. Elements in `bptree_node_t` can be accessed via *accessor functions* shown below.
 
 ### Interfaces
 ```c
