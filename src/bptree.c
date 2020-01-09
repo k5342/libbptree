@@ -312,10 +312,16 @@ int bptree_node_get_key_count(bptree_t *bpt, bptree_node_t *node){
 }
 
 bptree_key_t bptree_node_get_key_by_index(bptree_t *bpt, bptree_node_t *node, int index){
+	if (index < 0){
+		index += node->used;
+	}
 	return node->keys[index];
 }
 
 bptree_node_t *bptree_node_get_children_by_index(bptree_t *bpt, bptree_node_t *node, int index){
+	if (index < 0){
+		index += node->used;
+	}
 	return node->children[index];
 }
 
@@ -328,10 +334,16 @@ int bptree_leaf_get_key_count(bptree_t *bpt, bptree_node_t *leaf){
 }
 
 bptree_key_t bptree_leaf_get_key_by_index(bptree_t *bpt, bptree_node_t *leaf, int index){
+	if (index < 0){
+		index += leaf->used;
+	}
 	return leaf->keys[index];
 }
 
 bptree_node_t *bptree_leaf_get_children_by_index(bptree_t *bpt, bptree_node_t *leaf, int index){
+	if (index < 0){
+		index += leaf->used;
+	}
 	return leaf->children[index];
 }
 

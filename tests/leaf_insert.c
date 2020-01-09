@@ -18,6 +18,12 @@ bptree_test_result testcase_check_leaf_insert_single(){
 	if (bptree_leaf_get_children_by_index(bpt, leaf, 0) != (void *)0x0){
 		return BPTREE_TEST_FAILED;
 	}
+	if (bptree_leaf_get_key_by_index(bpt, leaf, -1) != (bptree_key_t)0){
+		return BPTREE_TEST_FAILED;
+	}
+	if (bptree_leaf_get_children_by_index(bpt, leaf, -1) != (void *)0x0){
+		return BPTREE_TEST_FAILED;
+	}
 	bptree_node_destroy(leaf);
 	return BPTREE_TEST_PASSED;
 }
