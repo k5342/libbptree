@@ -307,6 +307,46 @@ int bptree_search(bptree_t *bpt, bptree_key_t key, void **ptr){
 	return 0;
 }
 
+int bptree_node_get_key_count(bptree_t *bpt, bptree_node_t *node){
+	return node->used;
+}
+
+bptree_key_t bptree_node_get_key_by_index(bptree_t *bpt, bptree_node_t *node, int index){
+	if (index < 0){
+		index += node->used;
+	}
+	return node->keys[index];
+}
+
+bptree_node_t *bptree_node_get_children_by_index(bptree_t *bpt, bptree_node_t *node, int index){
+	if (index < 0){
+		index += node->used;
+	}
+	return node->children[index];
+}
+
+int bptree_node_is_leaf(bptree_node_t *bpt, bptree_node_t *node){
+	return node->is_leaf;
+}
+
+int bptree_leaf_get_key_count(bptree_t *bpt, bptree_node_t *leaf){
+	return leaf->used;
+}
+
+bptree_key_t bptree_leaf_get_key_by_index(bptree_t *bpt, bptree_node_t *leaf, int index){
+	if (index < 0){
+		index += leaf->used;
+	}
+	return leaf->keys[index];
+}
+
+bptree_node_t *bptree_leaf_get_children_by_index(bptree_t *bpt, bptree_node_t *leaf, int index){
+	if (index < 0){
+		index += leaf->used;
+	}
+	return leaf->children[index];
+}
+
 bptree_node_t *bptree_leaf_get_leftmost(bptree_t *bpt){
 	bptree_node_t *current = bpt->root;
 	while (!current->is_leaf){
