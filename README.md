@@ -14,22 +14,23 @@ void bptree_free(bptree_t *bpt);
 void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value);
 int bptree_search(bptree_t *bpt, bptree_key_t key, void **value);
 ```
+Note: These functions currently does not support multithreading.
 
-Accessors for nodes or leaves;
+#### Accessors for nodes
 ```c
 int bptree_node_get_key_count(bptree_t *bpt, bptree_node_t *node);
 bptree_key_t bptree_node_get_key_by_index(bptree_t *bpt, bptree_node_t *node, int index);
 bptree_node_t *bptree_node_get_children_by_index(bptree_t *bpt, bptree_node_t *node, int index);
 int bptree_node_is_leaf(bptree_node_t *bpt, bptree_node_t *node);
+```
 
+#### Accessors for leaves
+```c
 int bptree_leaf_get_key_count(bptree_t *bpt, bptree_node_t *leaf);
 bptree_key_t bptree_leaf_get_key_by_index(bptree_t *bpt, bptree_node_t *leaf, int index);
 bptree_node_t *bptree_leaf_get_children_by_index(bptree_t *bpt, bptree_node_t *leaf, int index);
-
 bptree_node_t *bptree_leaf_get_rightadjecent(bptree_t *bpt, bptree_node_t *leaf);
 ```
-
-Note: These functions currently does not support multithreading.
 
 ### Requirements
 - -std=c99 support
