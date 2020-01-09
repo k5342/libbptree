@@ -16,6 +16,7 @@ void bptree_leaf_print(bptree_t *bpt, bptree_node_t *leaf){
 		}
 		printf("%p", leaf->children[leaf->used]);
 	}
+	printf("|%p", leaf->children[bpt->nkeys]);
 	printf("}");
 }
 
