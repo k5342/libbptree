@@ -12,8 +12,6 @@ typedef struct _bptree_test_context {
 	bptree_t *bpt;
 	int data_counts;
 	int *values;
-	int npassed;
-	int nfailed;
 } bptree_test_context;
 
 bptree_test_context *bptree_create_test_context(int size, int data_counts);
