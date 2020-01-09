@@ -272,6 +272,7 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 		
 		// divide into left and right node
 		bptree_node_t *new = bptree_leaf_create(bpt);
+		new->children[bpt->nkeys] = leaf->children[bpt->nkeys];
 		leaf->children[bpt->nkeys] = new;
 		
 		int divide_right_size = (bpt->nkeys + 1) / 2;
