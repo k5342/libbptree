@@ -363,6 +363,10 @@ bptree_node_t *bptree_leaf_get_rightmost(bptree_t *bpt){
 	return current;
 }
 
+bptree_node_t *bptree_leaf_get_rightadjecent(bptree_t *bpt, bptree_node_t *leaf){
+	return leaf->children[bpt->nkeys];
+}
+
 void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value){
 	bptree_node_t *leaf = bptree_leaf_search(bpt, key);
 	bptree_leaf_insert(bpt, leaf, key, value);
