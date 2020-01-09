@@ -50,7 +50,7 @@ void bptree_node_destroy(bptree_node_t *node);
 
 bptree_node_t *bptree_leaf_get_leftmost(bptree_t *bpt);
 bptree_node_t *bptree_leaf_get_rightmost(bptree_t *bpt);
-bptree_node_t *bptree_leaf_get_rightadjecent(bptree_t *bpt, bptree_node_t *leaf);
+bptree_node_t *bptree_leaf_get_rightadjacent(bptree_t *bpt, bptree_node_t *leaf);
 
 // utils
 void bptree_print(bptree_t *bpt);

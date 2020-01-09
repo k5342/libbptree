@@ -220,9 +220,9 @@ bptree_test_result check_leaf(bptree_test_context *c){
 			global_index += 1;
 		}
 		
-		// check adjecent leaf
+		// check adjacent leaf
 		bptree_node_t *next;
-		next = bptree_leaf_get_rightadjecent(c->bpt, leaf);
+		next = bptree_leaf_get_rightadjacent(c->bpt, leaf);
 		if (next == NULL){
 			if (bptree_leaf_get_rightmost(c->bpt) == leaf){
 				break;
