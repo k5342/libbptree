@@ -92,7 +92,7 @@ bptree_test_result testcase_check_leaf_insert_divide_even(){
 	
 	for (int i = 0; i < 5; i++){
 		if (bptree_leaf_get_key_by_index(bpt, right_child, i) != (bptree_key_t)(i + 6)){
-			printf("right_child->keys[i] != i (expected %d, but %d)\n", (i + 6), bptree_leaf_get_key_by_index(bpt, right_child, i));
+			printf("right_child->keys[i] != i (expected %d, but %lld)\n", (i + 6), bptree_leaf_get_key_by_index(bpt, right_child, i));
 			return BPTREE_TEST_FAILED;
 		}
 		if (bptree_leaf_get_element_by_index(bpt, right_child, i) != (void *)(i + 6)){
