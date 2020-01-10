@@ -12,10 +12,13 @@ void bptree_leaf_print(bptree_t *bpt, bptree_node_t *leaf){
 	printf("{");
 	if (leaf->used > 0){
 		for(int i = 0; i < leaf->used; i++){
-			printf("%p %lld ", leaf->children[i], leaf->keys[i]);
+			printf("%p %lld", leaf->children[i], leaf->keys[i]);
+			if (i < leaf->used - 1){
+				printf(" ");
+			}
 		}
-		printf("%p", leaf->children[leaf->used]);
 	}
+	printf("|%p", leaf->children[bpt->nkeys]);
 	printf("}");
 }
 
@@ -269,6 +272,7 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 		
 		// divide into left and right node
 		bptree_node_t *new = bptree_leaf_create(bpt);
+		new->children[bpt->nkeys] = leaf->children[bpt->nkeys];
 		leaf->children[bpt->nkeys] = new;
 		
 		int divide_right_size = (bpt->nkeys + 1) / 2;
@@ -363,7 +367,7 @@ bptree_node_t *bptree_leaf_get_rightmost(bptree_t *bpt){
 	return current;
 }
 
-bptree_node_t *bptree_leaf_get_rightadjecent(bptree_t *bpt, bptree_node_t *leaf){
+bptree_node_t *bptree_leaf_get_rightadjacent(bptree_t *bpt, bptree_node_t *leaf){
 	return leaf->children[bpt->nkeys];
 }
 

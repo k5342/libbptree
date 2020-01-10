@@ -30,7 +30,7 @@ int bptree_node_is_leaf(bptree_node_t *bpt, bptree_node_t *node);
 int bptree_leaf_get_key_count(bptree_t *bpt, bptree_node_t *leaf);
 bptree_key_t bptree_leaf_get_key_by_index(bptree_t *bpt, bptree_node_t *leaf, int index);
 bptree_node_t *bptree_leaf_get_children_by_index(bptree_t *bpt, bptree_node_t *leaf, int index);
-bptree_node_t *bptree_leaf_get_rightadjecent(bptree_t *bpt, bptree_node_t *leaf);
+bptree_node_t *bptree_leaf_get_rightadjacent(bptree_t *bpt, bptree_node_t *leaf);
 ```
 
 ### Requirements
