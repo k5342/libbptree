@@ -75,7 +75,7 @@ bptree_test_result testcase_check_leaf_insert_divide_even(){
 		return BPTREE_TEST_FAILED;
 	}
 	if (bptree_node_get_key_count(bpt, right_child) != 5){
-		printf("left_child->used != 5 (expected 5, but %d)\n", bptree_node_get_key_count(bpt, right_child));
+		printf("right_child->used != 5 (expected 5, but %d)\n", bptree_node_get_key_count(bpt, right_child));
 		return BPTREE_TEST_FAILED;
 	}
 	
