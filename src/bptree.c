@@ -344,11 +344,11 @@ bptree_key_t bptree_leaf_get_key_by_index(bptree_t *bpt, bptree_node_t *leaf, in
 	return leaf->keys[index];
 }
 
-bptree_node_t *bptree_leaf_get_children_by_index(bptree_t *bpt, bptree_node_t *leaf, int index){
+void *bptree_leaf_get_element_by_index(bptree_t *bpt, bptree_node_t *leaf, int index){
 	if (index < 0){
 		index += leaf->used;
 	}
-	return leaf->children[index];
+	return (void *)leaf->children[index];
 }
 
 bptree_node_t *bptree_leaf_get_leftmost(bptree_t *bpt){
