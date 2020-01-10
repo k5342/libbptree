@@ -14,7 +14,7 @@ bptree_test_result testcase_check_passed_null(){
 bptree_test_result testcase_check_passed_not_null(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *node = bptree_node_create(bpt);
-	if (bpt != NULL){
+	if (node != NULL){
 		return BPTREE_TEST_PASSED;
 	}
 	bptree_free(bpt);
