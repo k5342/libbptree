@@ -117,15 +117,10 @@ bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bpt
 			return BPTREE_TEST_FAILED;
 		}
 	}
-	if (node->is_leaf != 0 && node->is_leaf != 1){
-		printf("Error: node->is_leaf must be set to zero or one\n");
-		return BPTREE_TEST_FAILED;
-	}
 	if (node->is_leaf == 1){
 		*max_key = node->keys[node->used - 1];
 		return BPTREE_TEST_PASSED;
-	}
-	if (node->is_leaf == 0){
+	} else if (node->is_leaf == 0){
 		// check children
 		for (int i = 0; i < node->used; i++){
 			if (node->children[i] == NULL){
@@ -156,6 +151,9 @@ bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bpt
 			return BPTREE_TEST_FAILED;
 		}
 		return BPTREE_TEST_PASSED;
+	} else {
+		printf("Error: node->is_leaf must be set to zero or one\n");
+		return BPTREE_TEST_FAILED;
 	}
 }
 
