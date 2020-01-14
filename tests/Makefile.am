@@ -12,7 +12,10 @@ check_PROGRAMS = \
 		insert_random \
 		insert_ascending_odd \
 		insert_descending_odd \
-		insert_random_odd
+		insert_random_odd \
+		insert_ascending_small \
+		insert_descending_small \
+		insert_random_small
 TESTS = $(check_PROGRAMS)
 
 init_SOURCES = init.c testutils.c
@@ -22,6 +25,9 @@ leaf_insert_SOURCES = leaf_insert.c testutils.c
 insert_ascending_SOURCES = insert_ascending.c testutils.c
 insert_descending_SOURCES = insert_descending.c testutils.c
 insert_random_SOURCES = insert_random.c testutils.c
+insert_ascending_small_SOURCES = insert_ascending_small.c testutils.c
+insert_descending_small_SOURCES = insert_descending_small.c testutils.c
+insert_random_small_SOURCES = insert_random_small.c testutils.c
 insert_ascending_odd_SOURCES = insert_ascending_odd.c testutils.c
 insert_descending_odd_SOURCES = insert_descending_odd.c testutils.c
 insert_random_odd_SOURCES = insert_random_odd.c testutils.c
