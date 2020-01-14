@@ -128,12 +128,15 @@ bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bpt
 				return BPTREE_TEST_FAILED;
 			}
 			int ret = _verify_node(c, node->children[i], node, max_key);
-			if (ret != 0){
+			if (ret != BPTREE_TEST_PASSED){
 				printf("Error: _verify_node does not end successfully\n");
 				return BPTREE_TEST_FAILED;
 			}
-			if (*max_key >= node->keys[i]){
+			if (*max_key > node->keys[i]){
 				printf("Error: node->keys[%d] (= %lld) is greater than max_key (= %lld)\n", i, node->keys[i], *max_key);
+				printf("node: ");
+				bptree_node_print(c->bpt, node);
+				printf("\n");
 				return BPTREE_TEST_FAILED;
 			}
 		}
@@ -142,12 +145,15 @@ bptree_test_result _verify_node(bptree_test_context *c, bptree_node_t *node, bpt
 			return BPTREE_TEST_FAILED;
 		}
 		int ret = _verify_node(c, node->children[node->used], node, max_key);
-		if (ret != 0){
+		if (ret != BPTREE_TEST_PASSED){
 			printf("Error: _verify_node does not end successfully\n");
 			return BPTREE_TEST_FAILED;
 		}
-		if (node->keys[node->used - 1] >= *max_key){
+		if (node->keys[node->used - 1] > *max_key){
 			printf("Error: node->keys[%d] (= %lld) is greater than max_key (= %lld)\n", node->used - 1, node->keys[node->used - 1], *max_key);
+			printf("node: ");
+			bptree_node_print(c->bpt, node);
+			printf("\n");
 			return BPTREE_TEST_FAILED;
 		}
 		return BPTREE_TEST_PASSED;
