@@ -138,7 +138,7 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 #endif
 	if (dst_node->used + 1 <= bpt->nkeys){
 		// shift and insert
-		for (int i = dst_node->used + 1; i > insert_index; i--){
+		for (int i = dst_node->used; i > insert_index; i--){
 			dst_node->keys[i] = dst_node->keys[i - 1];
 			dst_node->children[i + 1] = dst_node->children[i];
 		}
