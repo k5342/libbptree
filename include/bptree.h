@@ -6,8 +6,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
+#include <stdint.h>
 
-typedef long long bptree_key_t;
+typedef int64_t bptree_key_t;
 
 typedef struct bptree_node {
 	struct bptree *context;
