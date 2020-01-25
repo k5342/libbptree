@@ -7,7 +7,7 @@ An implementation of [B+-tree](https://en.wikipedia.org/wiki/B%2B_tree).  The B+
 
 ### Types
 - **bptree_t** - Holds a header and pointer to the body of B+-tree. It is an alias of `struct bptree`.
-- **bptree_key_t** - Represents the _key_ of B+-tree. It is an alias of `long long`.
+- **bptree_key_t** - Represents the _key_ of B+-tree. It is an alias of `int64_t`.
 - **bptree_node_t** - Represents the *internal node* and *leaf* in B+-tree. It is an alias of `struct bptree_node`. Elements in `bptree_node_t` can be accessed via *accessor functions* shown below.
 
 ### Interfaces
