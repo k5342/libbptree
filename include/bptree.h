@@ -26,6 +26,7 @@ typedef struct bptree {
 
 // libbptree interface
 bptree_t *bptree_init(int nkeys);
+void bptree__free(bptree_t *bpt, bptree_node_t *node);
 void bptree_free(bptree_t *bpt);
 void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value);
 int bptree_search(bptree_t *bpt, bptree_key_t key, void **ptr);

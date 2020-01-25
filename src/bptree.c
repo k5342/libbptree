@@ -395,10 +395,23 @@ bptree_t *bptree_init(int nkeys){
 	return bpt;
 }
 
+void bptree__free(bptree_t *bpt, bptree_node_t *node){
+	// this is for internal
+	if (node->is_leaf){
+		return;
+	}
+	for (int i = 0; i < node->used + 1; i++){
+		bptree__free(bpt, node->children[i]);
+		bptree_node_destroy(node->children[i]);
+	}
+	return;
+}
+
 void bptree_free(bptree_t *bpt){
 	if (bpt == NULL){
 		bptree_perror("bptree_free: bpr is NULL");
 	}
+	bptree__free(bpt, bpt->root);
 	bptree_node_destroy(bpt->root);
 	free(bpt);
 }
