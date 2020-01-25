@@ -14,6 +14,7 @@ bptree_test_context *bptree_create_test_context(int size, int data_counts){
 
 void bptree_destroy_context(bptree_test_context *c){
 	bptree_free(c->bpt);
+	free(c->values);
 	free(c);
 }
 
@@ -219,6 +220,7 @@ bptree_test_result check_leaf(bptree_test_context *c){
 			bptree_key_t k = bptree_leaf_get_key_by_index(c->bpt, leaf, i);
 			if (k != (bptree_key_t)buf[global_index]){
 				printf("Error: key[%d] at leaf:%p is wrong (expected: %lld, actual: %lld)\n", i, leaf, (bptree_key_t)buf[global_index], k);
+				free(buf);
 				return BPTREE_TEST_FAILED;
 			}
 			global_index += 1;
@@ -238,11 +240,13 @@ bptree_test_result check_leaf(bptree_test_context *c){
 				printf("leaf:%p: ", bptree_leaf_get_rightmost(c->bpt));
 				bptree_leaf_print(c->bpt, bptree_leaf_get_rightmost(c->bpt));
 				printf("\n");
+				free(buf);
 				return BPTREE_TEST_FAILED;
 			}
 		} else {
 			leaf = next;
 		}
 	}
+	free(buf);
 	return BPTREE_TEST_PASSED;
 }

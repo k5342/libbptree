@@ -14,11 +14,15 @@ bptree_test_result testcase_check_passed_null(){
 bptree_test_result testcase_check_passed_not_null(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *node = bptree_node_create(bpt);
+	bptree_test_result result;
 	if (node != NULL){
-		return BPTREE_TEST_PASSED;
+		result = BPTREE_TEST_PASSED;
+	} else {
+		result = BPTREE_TEST_FAILED;
 	}
+	bptree_node_destroy(node);
 	bptree_free(bpt);
-	return BPTREE_TEST_FAILED;
+	return result;
 }
 
 bptree_test_result testcase_check_context(){
@@ -28,6 +32,7 @@ bptree_test_result testcase_check_context(){
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -38,6 +43,7 @@ bptree_test_result testcase_check_parent(){
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -53,6 +59,7 @@ bptree_test_result testcase_check_children(){
 		}
 	}
 	bptree_node_destroy(node);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -68,6 +75,7 @@ bptree_test_result testcase_check_keys(){
 		}
 	}
 	bptree_node_destroy(node);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -78,6 +86,7 @@ bptree_test_result testcase_check_used(){
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -88,6 +97,7 @@ bptree_test_result testcase_check_is_not_leaf(){
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 

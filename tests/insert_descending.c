@@ -10,18 +10,24 @@ int main(int argc, char *argv[]){
 	
 	if (verify_tree(c) == BPTREE_TEST_FAILED){
 		printf("verify_tree returned fail\n");
+		bptree_destroy_context(c);
 		return 1;
 	}
 	if (check_search(c) == BPTREE_TEST_FAILED){
 		printf("check_search returned fail\n");
+		bptree_destroy_context(c);
 		return 1;
 	}
 	if (check_min_or_max(c) == BPTREE_TEST_FAILED){
 		printf("check_min_or_max returned fail\n");
+		bptree_destroy_context(c);
 		return 1;
 	}
 	if (check_leaf(c) == BPTREE_TEST_FAILED){
 		printf("check_leaf returned fail\n");
+		bptree_destroy_context(c);
 		return 1;
 	}
+	bptree_destroy_context(c);
+	return 0;
 }

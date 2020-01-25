@@ -15,8 +15,12 @@ bptree_test_result testcase_check_passed_not_null(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *leaf = bptree_leaf_create(bpt);
 	if (leaf != NULL){
+		bptree_node_destroy(leaf);
+		bptree_free(bpt);
 		return BPTREE_TEST_PASSED;
 	}
+	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_FAILED;
 }
 
@@ -24,9 +28,12 @@ bptree_test_result testcase_check_context(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *leaf = bptree_leaf_create(bpt);
 	if (leaf->context != bpt){
+		bptree_node_destroy(leaf);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -34,9 +41,12 @@ bptree_test_result testcase_check_parent(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *leaf = bptree_leaf_create(bpt);
 	if (leaf->parent != NULL){
+		bptree_node_destroy(leaf);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -48,10 +58,13 @@ bptree_test_result testcase_check_children(){
 	}
 	for (int i = 0; i < bpt->nkeys + 1; i++){
 		if (leaf->children[i] != (bptree_node_t *)i){
+			bptree_node_destroy(leaf);
+			bptree_free(bpt);
 			return BPTREE_TEST_FAILED;
 		}
 	}
 	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -63,10 +76,13 @@ bptree_test_result testcase_check_keys(){
 	}
 	for (int i = 0; i < bpt->nkeys; i++){
 		if (leaf->keys[i] != (bptree_key_t)i){
+			bptree_node_destroy(leaf);
+			bptree_free(bpt);
 			return BPTREE_TEST_FAILED;
 		}
 	}
 	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -74,9 +90,12 @@ bptree_test_result testcase_check_used(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *leaf = bptree_leaf_create(bpt);
 	if (leaf->used != 0){
+		bptree_node_destroy(leaf);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -84,9 +103,12 @@ bptree_test_result testcase_check_is_leaf(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *leaf = bptree_leaf_create(bpt);
 	if (leaf->is_leaf != 1){
+		bptree_node_destroy(leaf);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -94,9 +116,12 @@ bptree_test_result testcase_check_right_most_child(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *leaf = bptree_leaf_create(bpt);
 	if (leaf->children[bpt->nkeys] != NULL){
+		bptree_node_destroy(leaf);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
