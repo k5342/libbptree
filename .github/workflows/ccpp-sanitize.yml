@@ -1,0 +1,19 @@
+name: test/sanitizer
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: autoreconf
+      run: autoreconf -i -f
+    - name: configure
+      run: CFLAGS='-fno-sanitize=all -fsanitize=address' ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
