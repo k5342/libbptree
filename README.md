@@ -6,9 +6,9 @@
 An implementation of [B+-tree](https://en.wikipedia.org/wiki/B%2B_tree).  The B+-tree is a data structure which is intended to store pairs of a _key_ and _value_.  The _key_ is a **unique** integer to distinguish _value_ in B+-tree.  The _value_ is data to be stored in B+-tree and associated with a _key_.  The libbptree manages _key_ and _value_ as a following types; `bptree_key_t` and `void *`, respectively.
 
 ### Types
-- **bptree_t** - Holds a header and pointer to the body of B+-tree. It is an alias to `struct bptree`.
-- **bptree_key_t** - Represents the _key_ of B+-tree. It is an alias to `long long`.
-- **bptree_node_t** - Represents the *internal node* and *leaf* in B+-tree. It is an alias to `struct bptree_node`. Elements in `bptree_node_t` can be accessed via *accessor functions* shown below.
+- **bptree_t** - Holds a header and pointer to the body of B+-tree. It is an alias of `struct bptree`.
+- **bptree_key_t** - Represents the _key_ of B+-tree. It is an alias of `long long`.
+- **bptree_node_t** - Represents the *internal node* and *leaf* in B+-tree. It is an alias of `struct bptree_node`. Elements in `bptree_node_t` can be accessed via *accessor functions* shown below.
 
 ### Interfaces
 ```c
