@@ -24,7 +24,7 @@ bptree_test_result testcase_check_leaf_insert_single(){
 	if (bptree_leaf_get_element_by_index(bpt, leaf, -1) != (void *)0x0){
 		return BPTREE_TEST_FAILED;
 	}
-	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -45,7 +45,7 @@ bptree_test_result testcase_check_leaf_insert_no_divide(){
 			return BPTREE_TEST_FAILED;
 		}
 	}
-	bptree_node_destroy(leaf);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
@@ -100,9 +100,7 @@ bptree_test_result testcase_check_leaf_insert_divide_even(){
 			return BPTREE_TEST_FAILED;
 		}
 	}
-	bptree_node_destroy(bpt->root);
-	bptree_node_destroy(left_child);
-	bptree_node_destroy(right_child);
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
