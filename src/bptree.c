@@ -399,7 +399,7 @@ void bptree_free(bptree_t *bpt){
 	if (bpt == NULL){
 		bptree_perror("bptree_free: bpr is NULL");
 	}
-	free(bpt->root);
+	bptree_node_destroy(bpt->root);
 	free(bpt);
 }
 
