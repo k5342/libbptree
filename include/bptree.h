@@ -36,10 +36,12 @@ int bptree_node_get_key_count(bptree_t *bpt, bptree_node_t *node);
 bptree_key_t bptree_node_get_key_by_index(bptree_t *bpt, bptree_node_t *node, int index);
 bptree_node_t *bptree_node_get_children_by_index(bptree_t *bpt, bptree_node_t *node, int index);
 int bptree_node_is_leaf(bptree_t *bpt, bptree_node_t *node);
+void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bptree_node_t *ptr);
 
 int bptree_leaf_get_key_count(bptree_t *bpt, bptree_node_t *leaf);
 bptree_key_t bptree_leaf_get_key_by_index(bptree_t *bpt, bptree_node_t *leaf, int index);
 void *bptree_leaf_get_element_by_index(bptree_t *bpt, bptree_node_t *leaf, int index);
+void bptree_leaf_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key);
 
 // helpers
 void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, void *value);
