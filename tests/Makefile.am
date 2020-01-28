@@ -7,6 +7,7 @@ check_PROGRAMS = \
 		node_create \
 		leaf_create \
 		leaf_insert \
+		leaf_delete \
 		insert_ascending \
 		insert_descending \
 		insert_random \
@@ -22,6 +23,7 @@ init_SOURCES = init.c testutils.c
 node_create_SOURCES = node_create.c testutils.c
 leaf_create_SOURCES = leaf_create.c testutils.c
 leaf_insert_SOURCES = leaf_insert.c testutils.c
+leaf_delete_SOURCES = leaf_delete.c testutils.c
 insert_ascending_SOURCES = insert_ascending.c testutils.c
 insert_descending_SOURCES = insert_descending.c testutils.c
 insert_random_SOURCES = insert_random.c testutils.c
