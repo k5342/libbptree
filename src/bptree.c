@@ -539,7 +539,7 @@ bptree_node_t *bptree_node_get_children_by_index(bptree_t *bpt, bptree_node_t *n
 	return node->children[index];
 }
 
-int bptree_node_is_leaf(bptree_node_t *bpt, bptree_node_t *node){
+int bptree_node_is_leaf(bptree_t *bpt, bptree_node_t *node){
 	return node->is_leaf;
 }
 
