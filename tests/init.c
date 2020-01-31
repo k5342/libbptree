@@ -16,25 +16,37 @@ bptree_test_result testcase_2(){
 	if (bpt == NULL){
 		return BPTREE_TEST_PASSED;
 	}
-	bptree_free(bpt);
 	return BPTREE_TEST_FAILED;
 }
 
 bptree_test_result testcase_3(){
 	bptree_t *bpt = bptree_init(10);
-	if (bpt == NULL)      { return BPTREE_TEST_FAILED; }
-	if (bpt->root == NULL){ return BPTREE_TEST_FAILED; }
-	if (bpt->nkeys != 10) { return BPTREE_TEST_FAILED; }
-	bptree_free(bpt);
+	if (bpt == NULL){
+		return BPTREE_TEST_FAILED;
+	}
+	if (bpt->root == NULL){
+		return BPTREE_TEST_FAILED;
+	}
+	if (bpt->nkeys != 10){
+		return BPTREE_TEST_FAILED;
+	}
 	return BPTREE_TEST_PASSED;
 }
 
 bptree_test_result testcase_4(){
 	bptree_t *bpt = bptree_init(10);
-	if (bpt == NULL)            { return BPTREE_TEST_FAILED; }
-	if (bpt->root == NULL)      { return BPTREE_TEST_FAILED; }
-	if (bpt->root->used != 0)   { return BPTREE_TEST_FAILED; }
-	if (bpt->root->is_leaf != 1){ return BPTREE_TEST_FAILED; }
+	if (bpt == NULL){
+		return BPTREE_TEST_FAILED;
+	}
+	if (bpt->root == NULL){
+		return BPTREE_TEST_FAILED;
+	}
+	if (bpt->root->used != 0){
+		return BPTREE_TEST_FAILED;
+	}
+	if (bpt->root->is_leaf != 1){
+		return BPTREE_TEST_FAILED;
+	}
 	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }

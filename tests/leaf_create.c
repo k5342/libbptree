@@ -15,13 +15,15 @@ bptree_test_result testcase_check_passed_not_null(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *leaf = bptree_leaf_create(bpt);
 	if (leaf != NULL){
-		bptree_node_destroy(leaf);
-		bptree_free(bpt);
-		return BPTREE_TEST_PASSED;
+		goto fail;
 	}
 	bptree_node_destroy(leaf);
 	bptree_free(bpt);
 	return BPTREE_TEST_FAILED;
+fail:
+	bptree_node_destroy(leaf);
+	bptree_free(bpt);
+	return BPTREE_TEST_PASSED;
 }
 
 bptree_test_result testcase_check_context(){
