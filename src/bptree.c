@@ -324,7 +324,15 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 
 // remove key and ptr from node
 void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bptree_node_t *ptr){
+#ifdef DEBUG
+	printf("bptree_node_delete(bpt: %p, node: %p, key: %lld, ptr: %p)\n", bpt, node, key, ptr);
+	printf("bptree_node_delete: node = ");
+	bptree_node_print(bpt, node);
+#endif
 	int idx = bptree_node_key_index(bpt, node, key);
+#ifdef DEBUG
+	printf("bptree_node_delete: bptree_node_key_index(bpt: %p, node: %p, key: %lld) = %d\n", bpt, node, key, idx);
+#endif
 	if (idx < 0){
 		// not found
 		return;
@@ -340,6 +348,9 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bp
 		// not found
 		return;
 	}
+#ifdef DEBUG
+	printf("bptree_node_delete: offset = %d\n", offset);
+#endif
 	
 	// shift elements on node to remove key and ptr
 	for(int i = idx; i < node->used - 1; i++){
@@ -391,7 +402,9 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 	int leaf_minimum_keys = ceil((float)(bpt->nkeys - 1) / 2);
 	if (left_leaf->used + right_leaf->used < bpt->nkeys){
 		// merge
-		printf("merge\n");
+#ifdef DEBUG
+		printf("bptree_leaf_redistribute_or_merge: merge\n");
+#endif
 		for(int i = 0; i < right_leaf->used; i++){
 			printf("left_leaf->used = %d, right_leaf->used = %d, i = %d\n", left_leaf->used, right_leaf->used, i);
 			left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
@@ -458,6 +471,12 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 
 void bptree_leaf_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
 	int idx = bptree_node_key_index(bpt, leaf, key);
+#ifdef DEBUG
+	printf("bptree_leaf_delete: bptree_node_key_index(bpt: %p, leaf: %p, key: %lld) = %d\n", bpt, leaf, key, idx);
+	printf("bptree_leaf_delete: leaf = ");
+	bptree_leaf_print(bpt, leaf);
+	printf("\n");
+#endif
 	if (idx < 0){
 		// not found
 		return;
