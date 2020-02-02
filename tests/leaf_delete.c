@@ -208,6 +208,6 @@ int main(int argc, char *argv[]){
 	do_single_test("check delete first value from two elements of a leaf", testcase_check_leaf_delete_first_from_two);
 	do_single_test("check delete last value from two elements of a leaf", testcase_check_leaf_delete_last_from_two);
 	do_single_test("check delete middle value from a leaf", testcase_check_leaf_delete_middle_from_three);
-	do_single_test("check delete and merge from two leaves", testcase_check_leaf_delete_left_and_merge);
-	do_single_test("check delete and merge from two leaves", testcase_check_leaf_delete_right_and_merge);
+	do_single_test("check delete from left_leaf and then merge from two leaves", testcase_check_leaf_delete_left_and_merge);
+	do_single_test("check delete from right_leaf and then merge from two leaves", testcase_check_leaf_delete_right_and_merge);
 }
