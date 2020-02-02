@@ -400,7 +400,7 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 	printf("\n");
 #endif
 	int leaf_minimum_keys = ceil((float)(bpt->nkeys - 1) / 2);
-	if (left_leaf->used + right_leaf->used < bpt->nkeys){
+	if (left_leaf->used + right_leaf->used <= bpt->nkeys){
 		// merge
 #ifdef DEBUG
 		printf("bptree_leaf_redistribute_or_merge: merge\n");
