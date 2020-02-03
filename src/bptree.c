@@ -323,44 +323,29 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 }
 
 // remove key and ptr from node
-void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bptree_node_t *ptr){
+void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 #ifdef DEBUG
-	printf("bptree_node_delete(bpt: %p, node: %p, key: %lld, ptr: %p)\n", bpt, node, key, ptr);
+	printf("bptree_node_delete(bpt: %p, node: %p, ptr: %p)\n", bpt, node, ptr);
 	printf("bptree_node_delete: node = ");
 	bptree_node_print(bpt, node);
 	printf("\n");
 #endif
-	int idx = bptree_node_key_index(bpt, node, key);
+	int idx = bptree_node_ptr_index(bpt, node, ptr);
 #ifdef DEBUG
-	printf("bptree_node_delete: bptree_node_key_index(bpt: %p, node: %p, key: %lld) = %d\n", bpt, node, key, idx);
+	printf("bptree_node_delete: bptree_node_ptr_index(bpt: %p, node: %p, ptr: %p) = %d\n", bpt, node, ptr);
 #endif
 	if (idx < 0){
 		// not found
 		return;
 	}
 	
-	// set offset for deleting ptr by whether ptr is located on left or right of key
-	int offset;
-	if (node->children[idx] == ptr){
-		offset = 0;
-	} else if (node->children[idx + 1] == ptr){
-		offset = 1;
-	} else {
-		// not found
-		return;
-	}
-#ifdef DEBUG
-	printf("bptree_node_delete: offset = %d\n", offset);
-#endif
-	
 	// shift elements on node to remove key and ptr
 	for(int i = idx; i < node->used - 1; i++){
 		node->keys[i] = node->keys[i + 1];
-		node->children[i + offset] = node->children[i + offset + 1];
+		node->children[i] = node->children[i + 1];
 	}
-	if (offset == 0){
-		node->children[node->used - 1] = node->children[node->used];
-	}
+	node->children[node->used - 1] = node->children[node->used];
+	
 	node->used -= 1;
 	
 #ifdef DEBUG
@@ -422,7 +407,7 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 		left_leaf->children[bpt->nkeys] = right_leaf->children[bpt->nkeys];
 		
 		// propagate to parent node
-		bptree_node_delete(bpt, right_leaf->parent, right_leaf->keys[0], right_leaf);
+		bptree_node_delete(bpt, right_leaf->parent, right_leaf);
 		
 		// if root node is empty, then free it
 		if (right_leaf->parent == bpt->root){
@@ -441,6 +426,11 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 		}
 		
 		// free merged node
+#ifdef DEBUG
+		printf("bptree_leaf_redistribute_or_merge: destroy right_leaf = ");
+		bptree_node_print(bpt, right_leaf);
+		printf("\n");
+#endif
 		bptree_node_destroy(right_leaf);
 		return;
 	} else {
