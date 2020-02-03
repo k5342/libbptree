@@ -19,6 +19,7 @@ void bptree_destroy_context(bptree_test_context *c){
 }
 
 void do_single_test(char *test_name, bptree_test_result (*test_func)()){
+	printf("check - %s\n", test_name);
 	bptree_test_result r = test_func();
 	if (r == BPTREE_TEST_PASSED){
 		printf("passed - %s\n", test_name);
