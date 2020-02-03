@@ -152,7 +152,7 @@ bptree_test_result testcase_check_leaf_delete_right_and_merge(){
 		printf("root node must be a leaf\n");
 		goto fail;
 	}
-	if (bptree_leaf_get_rightadjacent(bpt, bpt->root) == NULL){
+	if (bptree_leaf_get_rightadjacent(bpt, bpt->root) != NULL){
 		printf("The adjacent leaf of left_leaf should be NULL\n");
 		goto fail;
 	}
@@ -190,7 +190,7 @@ bptree_test_result testcase_check_leaf_delete_left_and_merge(){
 		printf("root node must be a leaf\n");
 		goto fail;
 	}
-	if (bptree_leaf_get_rightadjacent(bpt, bpt->root) == NULL){
+	if (bptree_leaf_get_rightadjacent(bpt, bpt->root) != NULL){
 		printf("The adjacent leaf of left_leaf should be NULL\n");
 		goto fail;
 	}
