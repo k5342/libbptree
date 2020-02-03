@@ -30,6 +30,7 @@ bptree_test_result testcase_3(){
 	if (bpt->nkeys != 10){
 		return BPTREE_TEST_FAILED;
 	}
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 }
 
