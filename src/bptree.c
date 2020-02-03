@@ -328,6 +328,7 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bp
 	printf("bptree_node_delete(bpt: %p, node: %p, key: %lld, ptr: %p)\n", bpt, node, key, ptr);
 	printf("bptree_node_delete: node = ");
 	bptree_node_print(bpt, node);
+	printf("\n");
 #endif
 	int idx = bptree_node_key_index(bpt, node, key);
 #ifdef DEBUG
