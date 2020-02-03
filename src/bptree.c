@@ -363,6 +363,13 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_key_t key, bp
 	}
 	node->used -= 1;
 	
+#ifdef DEBUG
+	printf("bptree_node_delete: delete complete for %p\n", node);
+	printf("bptree_node_delete: node = ");
+	bptree_node_print(bpt, node);
+	printf("\n");
+#endif
+	
 	if (node == bpt->root){
 		return;
 	} else {
