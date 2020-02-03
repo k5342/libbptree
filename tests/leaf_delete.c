@@ -135,14 +135,16 @@ bptree_test_result testcase_check_leaf_delete_right_and_merge(){
 	bptree_node_t *left_leaf = leaf;
 	bptree_node_t *right_leaf = bptree_leaf_get_rightadjacent(bpt, leaf);
 	
-	for (int i = 0; i < 5; i++){
-		bptree_leaf_delete(bpt, right_leaf, (bptree_key_t)(i + 6));
-		if (bptree_leaf_get_key_by_index(bpt, right_leaf, 0) != (bptree_key_t)(i + 6)){
-			printf("Unexpected key value at index = 0 on right_leaf after %d times of delete\n", (i + 1));
+	bptree_leaf_delete(bpt, right_leaf, (bptree_key_t)6);
+	
+	int expected[] = {0, 1, 2, 3, 4, 5, 7, 8, 9, 10};
+	for (int i = 0; i < 10; i++){
+		if (bptree_leaf_get_key_by_index(bpt, left_leaf, i) != (bptree_key_t)expected[i]){
+			printf("Unexpected key value at index = %d on right_leaf\n", i);
 			goto fail;
 		}
-		if (bptree_leaf_get_element_by_index(bpt, right_leaf, 0) != (void *)(i + 6)){
-			printf("Unexpected element value at index = 0 on right_leaf after %d times of delete\n", (i + 1));
+		if (bptree_leaf_get_element_by_index(bpt, left_leaf, i) != (void *)expected[i]){
+			printf("Unexpected element value at index = %d on right_leaf\n", i);
 			goto fail;
 		}
 	}
@@ -173,14 +175,17 @@ bptree_test_result testcase_check_leaf_delete_left_and_merge(){
 	
 	bptree_node_t *left_leaf = leaf;
 	
-	for (int i = 0; i < 6; i++){
-		bptree_leaf_delete(bpt, left_leaf, (bptree_key_t)i);
-		if (bptree_leaf_get_key_by_index(bpt, left_leaf, 0) != (bptree_key_t)(i + 1)){
-			printf("Unexpected key value at index = 0 on left_leaf after %d times of delete\n", (i + 1));
+	bptree_leaf_delete(bpt, left_leaf, (bptree_key_t)0);
+	bptree_leaf_delete(bpt, left_leaf, (bptree_key_t)1);
+	
+	int expected[] = {2, 3, 4, 5, 6, 7, 8, 9, 10};
+	for (int i = 0; i < 9; i++){
+		if (bptree_leaf_get_key_by_index(bpt, left_leaf, i) != (bptree_key_t)expected[i]){
+			printf("Unexpected key value at index = %d on left_leaf\n", i);
 			goto fail;
 		}
-		if (bptree_leaf_get_element_by_index(bpt, left_leaf, 0) != (void *)(i + 1)){
-			printf("Unexpected element value at index = 0 on left_leaf after %d times of delete\n", (i + 1));
+		if (bptree_leaf_get_element_by_index(bpt, left_leaf, i) != (void *)expected[i]){
+			printf("Unexpected element value at index = %d on left_leaf\n", i);
 			goto fail;
 		}
 	}
