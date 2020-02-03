@@ -426,7 +426,13 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 		
 		// if root node is empty, then free it
 		if (right_leaf->parent == bpt->root){
+#ifdef DEBUG
+				printf("bptree_leaf_redistribute_or_merge: bpt->root->used = %d\n", bpt->root->used);
+#endif
 			if (bpt->root->used == 0){
+#ifdef DEBUG
+				printf("bptree_leaf_redistribute_or_merge: destroy old root\n");
+#endif
 				bptree_node_destroy(bpt->root);
 				bpt->root = left_leaf;
 				bpt->root->parent = NULL;
