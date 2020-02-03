@@ -14,21 +14,22 @@ bptree_test_result testcase_check_passed_null(){
 bptree_test_result testcase_check_passed_not_null(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *node = bptree_node_create(bpt);
-	bptree_test_result result;
-	if (node != NULL){
-		result = BPTREE_TEST_PASSED;
-	} else {
-		result = BPTREE_TEST_FAILED;
+	if (node == NULL){
+		bptree_node_destroy(node);
+		bptree_free(bpt);
+		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
 	bptree_free(bpt);
-	return result;
+	return BPTREE_TEST_PASSED;
 }
 
 bptree_test_result testcase_check_context(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *node = bptree_node_create(bpt);
 	if (node->context != bpt){
+		bptree_node_destroy(node);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
@@ -40,6 +41,8 @@ bptree_test_result testcase_check_parent(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *node = bptree_node_create(bpt);
 	if (node->parent != NULL){
+		bptree_node_destroy(node);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
@@ -55,6 +58,8 @@ bptree_test_result testcase_check_children(){
 	}
 	for (int i = 0; i < bpt->nkeys + 1; i++){
 		if (node->children[i] != (bptree_node_t *)i){
+			bptree_node_destroy(node);
+			bptree_free(bpt);
 			return BPTREE_TEST_FAILED;
 		}
 	}
@@ -71,6 +76,8 @@ bptree_test_result testcase_check_keys(){
 	}
 	for (int i = 0; i < bpt->nkeys; i++){
 		if (node->keys[i] != (bptree_key_t)i){
+			bptree_node_destroy(node);
+			bptree_free(bpt);
 			return BPTREE_TEST_FAILED;
 		}
 	}
@@ -83,6 +90,8 @@ bptree_test_result testcase_check_used(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *node = bptree_node_create(bpt);
 	if (node->used != 0){
+		bptree_node_destroy(node);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
@@ -94,6 +103,8 @@ bptree_test_result testcase_check_is_not_leaf(){
 	bptree_t *bpt = bptree_init(10);
 	bptree_node_t *node = bptree_node_create(bpt);
 	if (node->is_leaf != 0){
+		bptree_node_destroy(node);
+		bptree_free(bpt);
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_node_destroy(node);
