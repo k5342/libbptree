@@ -86,6 +86,17 @@ bptree_test_result insert_in_random(bptree_test_context *c){
 	return BPTREE_TEST_PASSED;
 }
 
+bptree_test_result delete_in_asc(bptree_test_context *c){
+	for (int i = 0; i < c->data_counts; i++){
+		bptree_delete(c->bpt, (bptree_key_t)c->values[i]);
+		if (verify_tree(c) == BPTREE_TEST_FAILED){
+			printf("Error: verify_tree() returned fail\n");
+			return BPTREE_TEST_FAILED;
+		}
+	}
+	return BPTREE_TEST_PASSED;
+}
+
 bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *node, bptree_node_t *node_parent, bptree_key_t *max_key){
 	if (node == NULL){
 		printf("Error: Passed pointer of node is NULL\n");
