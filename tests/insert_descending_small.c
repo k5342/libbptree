@@ -12,9 +12,9 @@ int main(int argc, char *argv[]){
 		printf("verify_tree returned fail");
 		goto fail;
 	}
-	bptree_destroy_context(c);
+	bptree_destroy_test_context(c);
 	return 0;
 fail:
-	bptree_destroy_context(c);
+	bptree_destroy_test_context(c);
 	return 1;
 }

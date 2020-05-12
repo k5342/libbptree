@@ -10,9 +10,9 @@ int main(int argc, char *argv[]){
 	
 	if (verify_tree(c) == BPTREE_TEST_FAILED){
 		printf("verify_tree returned fail\n");
-		bptree_destroy_context(c);
+		bptree_destroy_test_context(c);
 		return 1;
 	}
-	bptree_destroy_context(c);
+	bptree_destroy_test_context(c);
 	return 0;
 }
