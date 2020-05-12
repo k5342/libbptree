@@ -158,6 +158,7 @@ bptree_test_result testcase_check_leaf_delete_right_and_merge(){
 		printf("The adjacent leaf of left_leaf should be NULL\n");
 		goto fail;
 	}
+	bptree_free(bpt);
 	return BPTREE_TEST_PASSED;
 fail:
 	bptree_print(bpt);
