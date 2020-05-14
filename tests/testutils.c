@@ -89,8 +89,8 @@ bptree_test_result insert_in_random(bptree_test_context *c){
 bptree_test_result delete_in_asc(bptree_test_context *c){
 	for (int i = 0; i < c->data_counts; i++){
 		bptree_delete(c->bpt, (bptree_key_t)c->values[i]);
-		if (verify_tree(c) == BPTREE_TEST_FAILED){
-			printf("Error: verify_tree() returned fail\n");
+		if (check_tree_structure(c) == BPTREE_TEST_FAILED){
+			printf("Error: check_tree_structure() returned fail\n");
 			return BPTREE_TEST_FAILED;
 		}
 	}
