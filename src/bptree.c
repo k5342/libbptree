@@ -474,12 +474,15 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 }
 
 void bptree_leaf_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
-	int idx = bptree_node_key_index(bpt, leaf, key);
 #ifdef DEBUG
-	printf("bptree_leaf_delete: bptree_node_key_index(bpt: %p, leaf: %p, key: %lld) = %d\n", bpt, leaf, key, idx);
+	printf("bptree_leaf_delete(bpt: %p, leaf: %p, key: %lld)\n", bpt, leaf, key);
 	printf("bptree_leaf_delete: leaf = ");
 	bptree_leaf_print(bpt, leaf);
 	printf("\n");
+#endif
+	int idx = bptree_node_key_index(bpt, leaf, key);
+#ifdef DEBUG
+	printf("bptree_leaf_delete: bptree_node_key_index(bpt: %p, leaf: %p, key: %lld) = %d\n", bpt, leaf, key, idx);
 #endif
 	if (idx < 0){
 		// not found
