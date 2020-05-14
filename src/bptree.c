@@ -397,13 +397,12 @@ bptree_t *bptree_init(int nkeys){
 
 void bptree__free(bptree_t *bpt, bptree_node_t *node){
 	// this is for internal
-	if (node->is_leaf){
-		return;
+	if (node->is_leaf == false){
+		for (int i = 0; i < node->used + 1; i++){
+			bptree__free(bpt, node->children[i]);
+		}
 	}
-	for (int i = 0; i < node->used + 1; i++){
-		bptree__free(bpt, node->children[i]);
-		bptree_node_destroy(node->children[i]);
-	}
+	bptree_node_destroy(node);
 	return;
 }
 
@@ -412,7 +411,6 @@ void bptree_free(bptree_t *bpt){
 		bptree_perror("bptree_free: bpr is NULL");
 	}
 	bptree__free(bpt, bpt->root);
-	bptree_node_destroy(bpt->root);
 	free(bpt);
 }
 
