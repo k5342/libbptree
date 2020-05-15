@@ -161,6 +161,8 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 				printf("node: ");
 				bptree_node_print(c->bpt, node);
 				printf("\n");
+				printf("tree: ");
+				bptree_print(c->bpt);
 				return BPTREE_TEST_FAILED;
 			}
 		}
@@ -178,6 +180,8 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 			printf("node: ");
 			bptree_node_print(c->bpt, node);
 			printf("\n");
+			printf("tree: ");
+			bptree_print(c->bpt);
 			return BPTREE_TEST_FAILED;
 		}
 		return BPTREE_TEST_PASSED;
