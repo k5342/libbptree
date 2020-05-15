@@ -114,9 +114,16 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 		return BPTREE_TEST_FAILED;
 	}
 	// check attributes
-	if (node->used <= 0){
-		printf("Error: node->used must be greater than zero\n");
-		return BPTREE_TEST_FAILED;
+	if (node == c->bpt->root){
+		if (node->used < 0){
+			printf("Error: node->used must be greater than zero for root node\n");
+			return BPTREE_TEST_FAILED;
+		}
+	} else {
+		if (node->used <= 0){
+			printf("Error: node->used must be greater than zero for non-root node\n");
+			return BPTREE_TEST_FAILED;
+		}
 	}
 	if (node->parent != node_parent){
 		printf("Error: node->parent is not correct (expected %p, but %p)\n", node_parent, node->parent);
