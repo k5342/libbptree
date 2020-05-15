@@ -49,6 +49,9 @@ void bptree_node_print(bptree_t *bpt, bptree_node_t *node){
 }
 
 void bptree_print(bptree_t *bpt){
+#ifdef DEBUG
+	printf("bpt->root = %p\n", bpt->root);
+#endif
 	bptree_node_print(bpt, bpt->root);
 	printf("\n");
 }
