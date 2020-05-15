@@ -81,6 +81,9 @@ bptree_node_t *bptree_leaf_create(bptree_t *bpt){
 }
 
 void bptree_node_destroy(bptree_node_t *node){
+#ifdef DEBUG
+	printf("bptree_node_destroy(node = %p)\n", node);
+#endif
 	if (node == NULL){
 		bptree_perror("bptree_node_destroy: node is NULL");
 		return;
@@ -327,7 +330,7 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 #ifdef DEBUG
 	printf("bptree_node_delete(bpt: %p, node: %p, ptr: %p)\n", bpt, node, ptr);
 	printf("bptree_node_delete: node = ");
-	bptree_node_print(bpt, node);
+	bptree_leaf_print(bpt, node);
 	printf("\n");
 #endif
 	int idx = bptree_node_ptr_index(bpt, node, ptr);
@@ -351,7 +354,7 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 #ifdef DEBUG
 	printf("bptree_node_delete: delete complete for %p\n", node);
 	printf("bptree_node_delete: node = ");
-	bptree_node_print(bpt, node);
+	bptree_leaf_print(bpt, node);
 	printf("\n");
 #endif
 	
