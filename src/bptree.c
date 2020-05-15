@@ -332,7 +332,7 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 #endif
 	int idx = bptree_node_ptr_index(bpt, node, ptr);
 #ifdef DEBUG
-	printf("bptree_node_delete: bptree_node_ptr_index(bpt: %p, node: %p, ptr: %p) = %d\n", bpt, node, ptr);
+	printf("bptree_node_delete: bptree_node_ptr_index(bpt: %p, node: %p, ptr: %p) = %d\n", bpt, node, ptr, idx);
 #endif
 	if (idx < 0){
 		// not found
