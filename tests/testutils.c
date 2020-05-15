@@ -54,6 +54,11 @@ bptree_test_result insert_in_asc(bptree_test_context *c){
 	for (int i = 0; i < c->data_counts; i++){
 		c->values[i] = i;
 		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
+		if (check_tree_structure(c) == BPTREE_TEST_FAILED){
+			printf("Error: check_tree_structure() returned fail\n");
+			return BPTREE_TEST_FAILED;
+		}
+		bptree_print(c->bpt);
 	}
 	return BPTREE_TEST_PASSED;
 }
@@ -63,6 +68,7 @@ bptree_test_result insert_in_desc(bptree_test_context *c){
 		c->values[i] = i;
 		bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 		if (check_tree_structure(c) == BPTREE_TEST_FAILED){
+			printf("Error: check_tree_structure() returned fail\n");
 			return BPTREE_TEST_FAILED;
 		}
 		bptree_print(c->bpt);
@@ -81,6 +87,22 @@ bptree_test_result insert_in_random(bptree_test_context *c){
 				bptree_insert(c->bpt, (bptree_key_t)c->values[i], &c->values[i]);
 				break;
 			}
+		}
+		if (check_tree_structure(c) == BPTREE_TEST_FAILED){
+			printf("Error: check_tree_structure() returned fail\n");
+			return BPTREE_TEST_FAILED;
+		}
+		bptree_print(c->bpt);
+	}
+	return BPTREE_TEST_PASSED;
+}
+
+bptree_test_result delete_in_asc(bptree_test_context *c){
+	for (int i = 0; i < c->data_counts; i++){
+		bptree_delete(c->bpt, (bptree_key_t)c->values[i]);
+		if (check_tree_structure(c) == BPTREE_TEST_FAILED){
+			printf("Error: check_tree_structure() returned fail\n");
+			return BPTREE_TEST_FAILED;
 		}
 	}
 	return BPTREE_TEST_PASSED;

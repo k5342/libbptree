@@ -16,7 +16,16 @@ check_PROGRAMS = \
 		insert_random_odd \
 		insert_ascending_small \
 		insert_descending_small \
-		insert_random_small
+		insert_random_small \
+		delete_ascending \
+		delete_descending \
+		delete_random \
+		delete_ascending_odd \
+		delete_descending_odd \
+		delete_random_odd \
+		delete_ascending_small \
+		delete_descending_small \
+		delete_random_small
 TESTS = $(check_PROGRAMS)
 
 init_SOURCES = init.c testutils.c
@@ -33,4 +42,12 @@ insert_random_small_SOURCES = insert_random_small.c testutils.c
 insert_ascending_odd_SOURCES = insert_ascending_odd.c testutils.c
 insert_descending_odd_SOURCES = insert_descending_odd.c testutils.c
 insert_random_odd_SOURCES = insert_random_odd.c testutils.c
-
+delete_ascending_SOURCES = delete_ascending.c testutils.c
+delete_descending_SOURCES = delete_descending.c testutils.c
+delete_random_SOURCES = delete_random.c testutils.c
+delete_ascending_small_SOURCES = delete_ascending_small.c testutils.c
+delete_descending_small_SOURCES = delete_descending_small.c testutils.c
+delete_random_small_SOURCES = delete_random_small.c testutils.c
+delete_ascending_odd_SOURCES = delete_ascending_odd.c testutils.c
+delete_descending_odd_SOURCES = delete_descending_odd.c testutils.c
+delete_random_odd_SOURCES = delete_random_odd.c testutils.c

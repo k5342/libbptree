@@ -49,6 +49,9 @@ void bptree_node_print(bptree_t *bpt, bptree_node_t *node){
 }
 
 void bptree_print(bptree_t *bpt){
+#ifdef DEBUG
+	printf("bpt->root = %p\n", bpt->root);
+#endif
 	bptree_node_print(bpt, bpt->root);
 	printf("\n");
 }
@@ -81,6 +84,9 @@ bptree_node_t *bptree_leaf_create(bptree_t *bpt){
 }
 
 void bptree_node_destroy(bptree_node_t *node){
+#ifdef DEBUG
+	printf("bptree_node_destroy(node = %p)\n", node);
+#endif
 	if (node == NULL){
 		bptree_perror("bptree_node_destroy: node is NULL");
 		return;
@@ -327,7 +333,7 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 #ifdef DEBUG
 	printf("bptree_node_delete(bpt: %p, node: %p, ptr: %p)\n", bpt, node, ptr);
 	printf("bptree_node_delete: node = ");
-	bptree_node_print(bpt, node);
+	bptree_leaf_print(bpt, node);
 	printf("\n");
 #endif
 	int idx = bptree_node_ptr_index(bpt, node, ptr);
@@ -351,7 +357,7 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 #ifdef DEBUG
 	printf("bptree_node_delete: delete complete for %p\n", node);
 	printf("bptree_node_delete: node = ");
-	bptree_node_print(bpt, node);
+	bptree_leaf_print(bpt, node);
 	printf("\n");
 #endif
 	
@@ -639,13 +645,12 @@ bptree_t *bptree_init(int nkeys){
 
 void bptree__free(bptree_t *bpt, bptree_node_t *node){
 	// this is for internal
-	if (node->is_leaf){
-		return;
+	if (node->is_leaf == false){
+		for (int i = 0; i < node->used + 1; i++){
+			bptree__free(bpt, node->children[i]);
+		}
 	}
-	for (int i = 0; i < node->used + 1; i++){
-		bptree__free(bpt, node->children[i]);
-		bptree_node_destroy(node->children[i]);
-	}
+	bptree_node_destroy(node);
 	return;
 }
 
@@ -654,7 +659,6 @@ void bptree_free(bptree_t *bpt){
 		bptree_perror("bptree_free: bpr is NULL");
 	}
 	bptree__free(bpt, bpt->root);
-	bptree_node_destroy(bpt->root);
 	free(bpt);
 }
 
