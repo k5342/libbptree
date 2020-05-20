@@ -4,7 +4,7 @@
 #include "testutils.h"
 
 int main(int argc, char *argv[]){
-	bptree_test_context *c = bptree_create_test_context(10, 200);
+	bptree_test_context *c = bptree_create_test_context(4, 10);
 	
 	insert_in_asc(c);
 	if (delete_in_asc(c) != BPTREE_TEST_PASSED){

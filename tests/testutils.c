@@ -104,6 +104,7 @@ bptree_test_result delete_in_asc(bptree_test_context *c){
 			printf("Error: check_tree_structure() returned fail\n");
 			return BPTREE_TEST_FAILED;
 		}
+		bptree_print(c->bpt);
 	}
 	return BPTREE_TEST_PASSED;
 }

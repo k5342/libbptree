@@ -345,12 +345,22 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 		return;
 	}
 	
-	// shift elements on node to remove key and ptr
-	for(int i = idx; i < node->used - 1; i++){
-		node->keys[i] = node->keys[i + 1];
+	int idx_key;
+	if (idx > 0){
+		idx_key = idx - 1;
+	} else {
+		idx_key = idx;
+	}
+	
+	// shift elements on node to remove ptr
+	for(int i = idx; i < node->used; i++){
 		node->children[i] = node->children[i + 1];
 	}
-	node->children[node->used - 1] = node->children[node->used];
+	
+	// shift elements on node to remove corresponding key
+	for(int i = idx_key; i < node->used - 1; i++){
+		node->keys[i] = node->keys[i + 1];
+	}
 	
 	node->used -= 1;
 	
@@ -404,13 +414,23 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 #ifdef DEBUG
 		printf("bptree_leaf_redistribute_or_merge: merge\n");
 #endif
-		for(int i = 0; i < right_leaf->used; i++){
-			printf("left_leaf->used = %d, right_leaf->used = %d, i = %d\n", left_leaf->used, right_leaf->used, i);
-			left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
-			left_leaf->children[left_leaf->used] = right_leaf->children[i];
-			left_leaf->used += 1;
+		if (right_leaf->is_leaf == true){
+			for(int i = 0; i < right_leaf->used; i++){
+				printf("left_leaf->used = %d, right_leaf->used = %d, i = %d\n", left_leaf->used, right_leaf->used, i);
+				left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
+				left_leaf->children[left_leaf->used + 1] = right_leaf->children[i];
+				left_leaf->used += 1;
+			}
+			left_leaf->children[bpt->nkeys] = right_leaf->children[bpt->nkeys];
+		} else {
+			for(int i = 0; i <= right_leaf->used; i++){
+				printf("left_leaf->used = %d, right_leaf->used = %d, i = %d\n", left_leaf->used, right_leaf->used, i);
+				left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
+				left_leaf->children[left_leaf->used + 1] = right_leaf->children[i];
+				left_leaf->used += 1;
+				right_leaf->children[i]->parent = left_leaf; // for node
+			}
 		}
-		left_leaf->children[bpt->nkeys] = right_leaf->children[bpt->nkeys];
 		
 		// propagate to parent node
 		bptree_node_delete(bpt, right_leaf->parent, right_leaf);
