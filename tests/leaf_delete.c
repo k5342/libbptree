@@ -136,9 +136,10 @@ bptree_test_result testcase_check_leaf_delete_right_and_merge(){
 	bptree_node_t *right_leaf = bptree_leaf_get_rightadjacent(bpt, leaf);
 	
 	bptree_leaf_delete(bpt, right_leaf, (bptree_key_t)6);
+	bptree_leaf_delete(bpt, right_leaf, (bptree_key_t)5);
 	
-	int expected[] = {0, 1, 2, 3, 4, 5, 7, 8, 9, 10};
-	for (int i = 0; i < 10; i++){
+	int expected[] = {0, 1, 2, 3, 4, 7, 8, 9, 10};
+	for (int i = 0; i < 9; i++){
 		if (bptree_leaf_get_key_by_index(bpt, left_leaf, i) != (bptree_key_t)expected[i]){
 			printf("Unexpected key value at index = %d on right_leaf\n", i);
 			goto fail;
