@@ -417,13 +417,22 @@ void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, 
 		// second, move data from immediately adjecent node (do merge)
 		// left_node <--- right_node
 		for(int i = 0; i < right_node->used; i++){
+#ifdef DEBUG
 			printf("left_node->used = %d, right_node->used = %d, i = %d\n", left_node->used, right_node->used, i);
+			bptree_leaf_print(bpt, right_node->children[i]);
+			printf("\n");
+#endif
 			right_node->children[i]->parent = left_node;
 			left_node->keys[left_node->used] = right_node->keys[i];
 			left_node->children[left_node->used] = right_node->children[i];
 			left_node->used += 1;
 		}
-		left_node->children[left_node->used + 1] = right_node->children[right_node->used];
+#ifdef DEBUG
+		bptree_leaf_print(bpt, right_node->children[right_node->used]);
+		printf("\n");
+#endif
+		left_node->children[left_node->used] = right_node->children[right_node->used];
+		left_node->children[left_node->used]->parent = left_node;
 		
 		bptree_node_delete(bpt, left_node->parent, right_node);
 		
@@ -439,7 +448,6 @@ void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, 
 				bptree_node_destroy(bpt->root);
 				bpt->root = left_node;
 				bpt->root->parent = NULL;
-				bpt->root->children[bpt->nkeys] = NULL;
 			}
 		}
 		
