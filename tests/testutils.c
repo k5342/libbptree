@@ -176,6 +176,9 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 		}
 		if (node->children[node->used] == NULL){
 			printf("Error: node->children[-1] is NULL\n");
+			printf("node: ");
+			bptree_leaf_print(c->bpt, node);
+			printf("\n");
 			return BPTREE_TEST_FAILED;
 		}
 		int ret = _check_tree_structure(c, node->children[node->used], node, max_key);
