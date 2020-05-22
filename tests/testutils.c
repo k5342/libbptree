@@ -146,6 +146,9 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 	for (int i = 1; i < node->used; i++){
 		if (node->keys[i - 1] >= node->keys[i]){
 			printf("Error: node->keys does not accomplish ascending order\n");
+			printf("node: ");
+			bptree_leaf_print(c->bpt, node);
+			printf("\n");
 			return BPTREE_TEST_FAILED;
 		}
 	}
