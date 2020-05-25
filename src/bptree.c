@@ -461,13 +461,18 @@ void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, 
 			return;
 		}
 		if (underfull_node == left_node){
+			// append left_node->children from right_node->children[0]
+			left_node->keys[left_node->used++] = left_node->parent[parent_key_index];
+			left_node->children[left_node->used] = right_node->children[0];
+			left_node->children[left_node->used]->parent = left_node;
+			
 			// data moves from head of right node to end of left node
-			for(int i = 0; i < need_keys; i++){
-				left_node->keys[left_node->used] = right_node->keys[i];
+			for(int i = 1; i < need_keys; i++){
+				left_node->keys[left_node->used++] = right_node->keys[i - 1];
 				left_node->children[left_node->used] = right_node->children[i];
 				left_node->children[left_node->used]->parent = left_node;
-				left_node->used += 1;
 			}
+			
 			// shift data {need_keys} times on right_node
 			for(int i = 0; i < right_node->used - need_keys; i++){
 				right_node->keys[i] = right_node->keys[i + need_keys];
@@ -476,20 +481,22 @@ void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, 
 			right_node->used -= need_keys;
 		} else {
 			// shift data
-			right_node->keys[right_node->used + need_keys + 1] = right_node->keys[right_node->used + need_keys]; // right-most pointer
+			right_node->children[right_node->used + need_keys] = right_node->children[right_node->used + need_keys - 1]; // right-most pointer
 			for(int i = 0; i < right_node->used; i++){
-				right_node->keys[right_node->used + need_keys - i] = right_node->keys[right_node->used + need_keys - i - 1];
-				right_node->children[right_node->used + need_keys - i] = right_node->children[right_node->used + need_keys - i - 1];
+				right_node->keys[right_node->used + need_keys - i - 1] = right_node->keys[right_node->used + need_keys - i - 2];
+				right_node->children[right_node->used + need_keys - i - 1] = right_node->children[right_node->used + need_keys - i - 2];
 			}
 			// data moves from left to right
 			for(int i = 0; i < need_keys; i++){
-				right_node->keys[i] = left_node->keys[left_node->used];
-				right_node->children[i] = left_node->children[left_node->used];
+				right_node->keys[i] = left_node->keys[left_node->used - 1];
+				right_node->children[i] = left_node->children[left_node->used - 1];
 				right_node->children[i]->parent = right_node;
 				left_node->used -= 1;
 				right_node->used += 1;
 			}
 		}
+		// finally update key in parent node
+		right_node->parent->keys[parent_key_index] = right_node->keys[0];
 	}
 }
 
