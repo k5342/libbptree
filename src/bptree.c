@@ -335,6 +335,9 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 	printf("bptree_node_delete: node = ");
 	bptree_leaf_print(bpt, node);
 	printf("\n");
+	printf("bptree_node_delete: ptr = ");
+	bptree_leaf_print(bpt, ptr);
+	printf("\n");
 #endif
 	int idx_ptr = bptree_node_ptr_index(bpt, node, ptr);
 #ifdef DEBUG
@@ -380,6 +383,8 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 		} else {
 			// redistribute or merge from adjacent node
 			// first, look up the parent node and then find adjacent node and key
+			bptree_leaf_print(bpt, node->parent);
+			printf("\n");
 			int idx = bptree_node_ptr_index(bpt, node->parent, node);
 			if (idx < node->parent->used){
 				// look right sibling
@@ -487,13 +492,17 @@ void bptree_node_borrow_keys(bptree_t *bpt, bptree_node_t *left_node, bptree_nod
 		bptree_node_shift(bpt, right_node, need_keys);
 		
 		// data moves from left to right
-		for(int i = 0; i < need_keys; i++){
+		for(int i = 0; i < need_keys - 1; i++){
 			right_node->keys[i] = left_node->keys[left_node->used - 1];
 			right_node->children[i] = left_node->children[left_node->used - 1];
 			right_node->children[i]->parent = right_node;
 			left_node->used -= 1;
-			right_node->used += 1;
 		}
+		
+		right_node->keys[need_keys - 1] = right_node->parent->keys[parent_key_index];
+		right_node->children[need_keys - 1] = left_node->children[left_node->used];
+		right_node->children[need_keys - 1]->parent = right_node;
+		right_node += need_keys;
 	}
 	// finally update key in parent node
 	right_node->parent->keys[parent_key_index] = right_node->keys[0];
@@ -584,7 +593,6 @@ void bptree_leaf_borrow_keys(bptree_t *bpt, bptree_node_t *left_leaf, bptree_nod
 		
 		// insert data
 		for(int i = 0; i < need_keys; i++){
-			printf("move left_leaf->keys[%d] = %lld, left_leaf->used = %d\n", i, left_leaf->keys[left_leaf->used - 1], left_leaf->used);
 			right_leaf->keys[i] = left_leaf->keys[left_leaf->used - 1];
 			right_leaf->children[i] = left_leaf->children[left_leaf->used - 1];
 			left_leaf->used -= 1;
