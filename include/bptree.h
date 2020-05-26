@@ -50,6 +50,11 @@ void bptree_node_insert(bptree_t *bpt, bptree_node_t *l_child, bptree_key_t key,
 int bptree_node_insert_index(bptree_t *bpt, bptree_node_t *node, bptree_key_t key);
 void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, bptree_node_t *right_leaf, bptree_node_t *underfull_leaf, int parent_key_index);
 void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, bptree_node_t *right_node, bptree_node_t *underfull_node, int parent_key_index);
+void bptree_node_borrow_keys(bptree_t *bpt, bptree_node_t *left_node, bptree_node_t *right_node,
+								bptree_node_t *underfull_node, int need_keys, int parent_key_index);
+void bptree_leaf_borrow_keys(bptree_t *bpt, bptree_node_t *left_leaf, bptree_node_t *right_leaf,
+								bptree_node_t *underfull_leaf, int need_keys, int parent_key_index);
+void bptree_node_shift(bptree_t *bpt, bptree_node_t *node, int n);
 
 bptree_node_t *bptree_node_create(bptree_t *bpt);
 bptree_node_t *bptree_leaf_create(bptree_t *bpt);

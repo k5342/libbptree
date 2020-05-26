@@ -114,6 +114,11 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 		printf("Error: Passed pointer of node is NULL\n");
 		return BPTREE_TEST_FAILED;
 	}
+//	printf("node: %p (%p), node->parent = %p (%p), node_parent = %p (%p)\n", node, &node, node->parent, &node->parent, node_parent, &node_parent);
+	printf("node: %p\n", node);
+	printf("node->parent: %p\n", &node->parent);
+	bptree_leaf_print(c->bpt, node);
+	printf("\n");
 	if (node->parent != node_parent){
 		printf("Error: node->parent is not correct (expected %p, but %p)\n", node_parent, node->parent);
 		printf("node: \n");
@@ -170,6 +175,10 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 				printf("Error: node->children[%d] is NULL\n", i);
 				return BPTREE_TEST_FAILED;
 			}
+	printf("#node: %p\n", node);
+	printf("#node->parent: %p\n", &node->parent);
+	bptree_leaf_print(c->bpt, node);
+	printf("\n");
 			int ret = _check_tree_structure(c, node->children[i], node, max_key);
 			if (ret != BPTREE_TEST_PASSED){
 				printf("Error: _check_tree_structure does not end successfully\n");
@@ -192,6 +201,10 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 			printf("\n");
 			return BPTREE_TEST_FAILED;
 		}
+	printf("!node: %p\n", node);
+	printf("!node->parent: %p\n", &node->parent);
+	bptree_leaf_print(c->bpt, node);
+	printf("\n");
 		int ret = _check_tree_structure(c, node->children[node->used], node, max_key);
 		if (ret != BPTREE_TEST_PASSED){
 			printf("Error: _check_tree_structure does not end successfully\n");
@@ -223,6 +236,8 @@ bptree_test_result check_tree_structure(bptree_test_context *c){
 		return BPTREE_TEST_FAILED;
 	}
 	bptree_key_t max_key;
+	bptree_leaf_print(c->bpt, c->bpt->root);
+	printf("\n");
 	return _check_tree_structure(c, c->bpt->root, c->bpt->root->parent, &max_key);
 }
 

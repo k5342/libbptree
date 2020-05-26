@@ -456,48 +456,47 @@ void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, 
 		// redistribute pointers
 		int need_keys = node_minimum_keys - underfull_node->used;
 		printf("need_keys: %d\n", need_keys);
-		if (need_keys <= 0){
-			// nothing to do
-			return;
-		}
-		if (underfull_node == left_node){
-			// append left_node->children from right_node->children[0]
-			left_node->keys[left_node->used++] = left_node->parent[parent_key_index];
-			left_node->children[left_node->used] = right_node->children[0];
-			left_node->children[left_node->used]->parent = left_node;
-			
-			// data moves from head of right node to end of left node
-			for(int i = 1; i < need_keys; i++){
-				left_node->keys[left_node->used++] = right_node->keys[i - 1];
-				left_node->children[left_node->used] = right_node->children[i];
-				left_node->children[left_node->used]->parent = left_node;
-			}
-			
-			// shift data {need_keys} times on right_node
-			for(int i = 0; i < right_node->used - need_keys; i++){
-				right_node->keys[i] = right_node->keys[i + need_keys];
-				right_node->children[i] = right_node->children[i + need_keys];
-			}
-			right_node->used -= need_keys;
-		} else {
-			// shift data
-			right_node->children[right_node->used + need_keys] = right_node->children[right_node->used + need_keys - 1]; // right-most pointer
-			for(int i = 0; i < right_node->used; i++){
-				right_node->keys[right_node->used + need_keys - i - 1] = right_node->keys[right_node->used + need_keys - i - 2];
-				right_node->children[right_node->used + need_keys - i - 1] = right_node->children[right_node->used + need_keys - i - 2];
-			}
-			// data moves from left to right
-			for(int i = 0; i < need_keys; i++){
-				right_node->keys[i] = left_node->keys[left_node->used - 1];
-				right_node->children[i] = left_node->children[left_node->used - 1];
-				right_node->children[i]->parent = right_node;
-				left_node->used -= 1;
-				right_node->used += 1;
-			}
-		}
-		// finally update key in parent node
-		right_node->parent->keys[parent_key_index] = right_node->keys[0];
+		bptree_node_borrow_keys(bpt, left_node, right_node, underfull_node, need_keys, parent_key_index);
 	}
+}
+
+void bptree_node_borrow_keys(bptree_t *bpt, bptree_node_t *left_node, bptree_node_t *right_node,
+								bptree_node_t *underfull_node, int need_keys, int parent_key_index){
+	if (need_keys <= 0){
+		// nothing to do
+		return;
+	}
+	if (underfull_node == left_node){
+		// append left_node->children from right_node->children[0]
+		left_node->keys[left_node->used++] = left_node->parent->keys[parent_key_index];
+		left_node->children[left_node->used] = right_node->children[0];
+		left_node->children[left_node->used]->parent = left_node;
+		
+		// data moves from head of right node to end of left node
+		for(int i = 1; i < need_keys; i++){
+			left_node->keys[left_node->used++] = right_node->keys[i - 1];
+			left_node->children[left_node->used] = right_node->children[i];
+			left_node->children[left_node->used]->parent = left_node;
+		}
+		
+		// shift data {need_keys} times on right_node
+		bptree_node_shift(bpt, right_node, -need_keys);
+		right_node->used -= need_keys;
+	} else {
+		// shift data
+		bptree_node_shift(bpt, right_node, need_keys);
+		
+		// data moves from left to right
+		for(int i = 0; i < need_keys; i++){
+			right_node->keys[i] = left_node->keys[left_node->used - 1];
+			right_node->children[i] = left_node->children[left_node->used - 1];
+			right_node->children[i]->parent = right_node;
+			left_node->used -= 1;
+			right_node->used += 1;
+		}
+	}
+	// finally update key in parent node
+	right_node->parent->keys[parent_key_index] = right_node->keys[0];
 }
 
 void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, bptree_node_t *right_leaf, bptree_node_t *underfull_leaf, int parent_key_index){
@@ -558,43 +557,69 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 		// redistribute pointers
 		int need_keys = leaf_minimum_keys - underfull_leaf->used;
 		printf("need_keys: %d\n", need_keys);
-		if (need_keys <= 0){
-			// nothing to do
-			return;
+		bptree_leaf_borrow_keys(bpt, left_leaf, right_leaf, underfull_leaf, need_keys, parent_key_index);
+	}
+}
+
+void bptree_leaf_borrow_keys(bptree_t *bpt, bptree_node_t *left_leaf, bptree_node_t *right_leaf,
+								bptree_node_t *underfull_leaf, int need_keys, int parent_key_index){
+	if (need_keys <= 0){
+		// nothing to do
+		return;
+	}
+	if (underfull_leaf == left_leaf){
+		// left_leaf: append data
+		// right_leaf: left shift data
+		for(int i = 0; i < need_keys; i++){
+			left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
+			left_leaf->children[left_leaf->used] = right_leaf->children[i];
+			left_leaf->used += 1;
 		}
-		if (underfull_leaf == left_leaf){
-			// data moves from head of right leaf to end of left leaf
-			for(int i = 0; i < need_keys; i++){
-				left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
-				left_leaf->children[left_leaf->used] = right_leaf->children[i];
-				left_leaf->used += 1;
-			}
-			// shift data {need_keys} times on right_leaf
-			for(int i = 0; i < right_leaf->used - need_keys; i++){
-				right_leaf->keys[i] = right_leaf->keys[i + need_keys];
-				right_leaf->children[i] = right_leaf->children[i + need_keys];
-			}
-			right_leaf->used -= need_keys;
-		} else {
-			// shift data
-			for(int i = 0; i < right_leaf->used; i++){
-				printf("shift right_leaf->keys[%d] = %lld\n", right_leaf->used + need_keys - i - 1, right_leaf->keys[right_leaf->used + need_keys - i - 2]);
-				right_leaf->keys[right_leaf->used + need_keys - i - 1] = right_leaf->keys[right_leaf->used + need_keys - i - 2];
-				right_leaf->children[right_leaf->used + need_keys - i - 1] = right_leaf->children[right_leaf->used + need_keys - i - 2];
-			}
-			// data moves from left to right
-			bptree_leaf_print(bpt, left_leaf);
-			printf("\n");
-			for(int i = 0; i < need_keys; i++){
-				printf("move left_leaf->keys[%d] = %lld, left_leaf->used = %d\n", i, left_leaf->keys[left_leaf->used - 1], left_leaf->used);
-				right_leaf->keys[i] = left_leaf->keys[left_leaf->used - 1];
-				right_leaf->children[i] = left_leaf->children[left_leaf->used - 1];
-				left_leaf->used -= 1;
-				right_leaf->used += 1;
-			}
+		bptree_node_shift(bpt, right_leaf, -need_keys);
+		right_leaf->used -= need_keys;
+	} else {
+		// right_leaf: shift data + insert data
+		// left_leaf: decrement key count
+		bptree_node_shift(bpt, right_leaf, need_keys);
+		
+		// insert data
+		for(int i = 0; i < need_keys; i++){
+			printf("move left_leaf->keys[%d] = %lld, left_leaf->used = %d\n", i, left_leaf->keys[left_leaf->used - 1], left_leaf->used);
+			right_leaf->keys[i] = left_leaf->keys[left_leaf->used - 1];
+			right_leaf->children[i] = left_leaf->children[left_leaf->used - 1];
+			left_leaf->used -= 1;
+			right_leaf->used += 1;
 		}
-		// finally update key in parent node
-		right_leaf->parent->keys[parent_key_index] = right_leaf->keys[0];
+	}
+	// finally update key in parent node
+	right_leaf->parent->keys[parent_key_index] = right_leaf->keys[0];
+}
+
+// shift key and pointers in node, not modify node->used
+// n < 0: left shift
+// n > 0: right shift
+// TODO: merge shift on insert
+void bptree_node_shift(bptree_t *bpt, bptree_node_t *node, int n){
+	if (n == 0){
+		return;
+	}
+	if (n < 0){
+		n = -n;
+		for(int i = 0; i < node->used - n; i++){
+			node->keys[i] = node->keys[i + n];
+			node->children[i] = node->children[i + n];
+		}
+		if (node->is_leaf == false){
+			node->children[node->used - n] = node->children[node->used];
+		}
+	} else {
+		if (node->is_leaf == false){
+			node->children[node->used + n] = node->children[node->used];
+		}
+		for(int i = node->used + n - 1; i >= n; i--){
+			node->keys[i] = node->keys[i - n];
+			node->children[i] = node->children[i - n];
+		}
 	}
 }
 
