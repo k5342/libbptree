@@ -477,6 +477,9 @@ void bptree_node_borrow_keys(bptree_t *bpt, bptree_node_t *left_node, bptree_nod
 		left_node->children[left_node->used] = right_node->children[0];
 		left_node->children[left_node->used]->parent = left_node;
 		
+		// update key in parent node
+		left_node->parent->keys[parent_key_index] = right_node->keys[need_keys - 1];
+		
 		// data moves from head of right node to end of left node
 		for(int i = 1; i < need_keys; i++){
 			left_node->keys[left_node->used++] = right_node->keys[i - 1];
@@ -503,9 +506,10 @@ void bptree_node_borrow_keys(bptree_t *bpt, bptree_node_t *left_node, bptree_nod
 		right_node->children[need_keys - 1] = left_node->children[left_node->used];
 		right_node->children[need_keys - 1]->parent = right_node;
 		right_node += need_keys;
+		
+		// finally update key in parent node
+		right_node->parent->keys[parent_key_index] = right_node->keys[0];
 	}
-	// finally update key in parent node
-	right_node->parent->keys[parent_key_index] = right_node->keys[0];
 }
 
 void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, bptree_node_t *right_leaf, bptree_node_t *underfull_leaf, int parent_key_index){
