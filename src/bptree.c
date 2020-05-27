@@ -417,7 +417,7 @@ void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, 
 		// merge required
 		// first, pull down an appropriate key from parent node
 		bptree_key_t pulldown_key = left_node->parent->keys[parent_key_index];
-		underfull_node->keys[underfull_node->used++] = pulldown_key;
+		left_node->keys[left_node->used++] = pulldown_key;
 		
 		// second, move data from immediately adjecent node (do merge)
 		// left_node <--- right_node
