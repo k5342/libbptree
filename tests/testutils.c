@@ -97,7 +97,7 @@ bptree_test_result insert_in_random(bptree_test_context *c){
 	return BPTREE_TEST_PASSED;
 }
 
-bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *node, bptree_node_t *node_parent, bptree_key_t *max_key){
+bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *node, bptree_node_t *node_parent, bptree_key_t *min_key, bptree_key_t *max_key){
 	if (node == NULL){
 		printf("Error: Passed pointer of node is NULL\n");
 		return BPTREE_TEST_FAILED;
@@ -131,7 +131,22 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 		}
 	}
 	if (node->is_leaf == 1){
-		*max_key = node->keys[node->used - 1];
+		for (int i = 0; i < node->used; i++){
+			if (max_key != NULL && *max_key <= node->keys[i]){
+				printf("Error: node->keys[%d] (= %lld) is greater than max_key (= %lld)\n", i, node->keys[i], *max_key);
+				printf("node: ");
+				bptree_node_print(c->bpt, node);
+				printf("\n");
+				return BPTREE_TEST_FAILED;
+			}
+			if (min_key != NULL && *min_key > node->keys[i]){
+				printf("Error: node->keys[%d] (= %lld) is smaller than min_key (= %lld)\n", i + 1, node->keys[i + 1], *min_key);
+				printf("node: ");
+				bptree_node_print(c->bpt, node);
+				printf("\n");
+				return BPTREE_TEST_FAILED;
+			}
+		}
 		return BPTREE_TEST_PASSED;
 	} else if (node->is_leaf == 0){
 		// check children
@@ -140,13 +155,22 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 				printf("Error: node->children[%d] is NULL\n", i);
 				return BPTREE_TEST_FAILED;
 			}
-			int ret = _check_tree_structure(c, node->children[i], node, max_key);
+			bptree_key_t *_min_key = (i > 0) ? &node->keys[i - 1] : NULL;
+			bptree_key_t *_max_key = &node->keys[i];
+			int ret = _check_tree_structure(c, node->children[i], node, _min_key, _max_key);
 			if (ret != BPTREE_TEST_PASSED){
 				printf("Error: _check_tree_structure does not end successfully\n");
 				return BPTREE_TEST_FAILED;
 			}
-			if (*max_key > node->keys[i]){
+			if (max_key != NULL && *max_key <= node->keys[i]){
 				printf("Error: node->keys[%d] (= %lld) is greater than max_key (= %lld)\n", i, node->keys[i], *max_key);
+				printf("node: ");
+				bptree_node_print(c->bpt, node);
+				printf("\n");
+				return BPTREE_TEST_FAILED;
+			}
+			if (min_key != NULL && *min_key > node->keys[i]){
+				printf("Error: node->keys[%d] (= %lld) is smaller than min_key (= %lld)\n", i + 1, node->keys[i + 1], *min_key);
 				printf("node: ");
 				bptree_node_print(c->bpt, node);
 				printf("\n");
@@ -157,16 +181,9 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 			printf("Error: node->children[-1] is NULL\n");
 			return BPTREE_TEST_FAILED;
 		}
-		int ret = _check_tree_structure(c, node->children[node->used], node, max_key);
+		int ret = _check_tree_structure(c, node->children[node->used], node, &node->keys[node->used - 1], NULL);
 		if (ret != BPTREE_TEST_PASSED){
 			printf("Error: _check_tree_structure does not end successfully\n");
-			return BPTREE_TEST_FAILED;
-		}
-		if (node->keys[node->used - 1] > *max_key){
-			printf("Error: node->keys[%d] (= %lld) is greater than max_key (= %lld)\n", node->used - 1, node->keys[node->used - 1], *max_key);
-			printf("node: ");
-			bptree_node_print(c->bpt, node);
-			printf("\n");
 			return BPTREE_TEST_FAILED;
 		}
 		return BPTREE_TEST_PASSED;
@@ -185,8 +202,7 @@ bptree_test_result check_tree_structure(bptree_test_context *c){
 		printf("Error: bpt->root == NULL\n");
 		return BPTREE_TEST_FAILED;
 	}
-	bptree_key_t max_key;
-	return _check_tree_structure(c, c->bpt->root, c->bpt->root->parent, &max_key);
+	return _check_tree_structure(c, c->bpt->root, c->bpt->root->parent, NULL, NULL);
 }
 
 bptree_test_result check_min_or_max(bptree_test_context *c){
