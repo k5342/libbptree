@@ -174,7 +174,7 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 					return BPTREE_TEST_FAILED;
 				}
 				if (min_key != NULL && *min_key > node->keys[i]){
-					printf("Error: node->keys[%d] (= %lld) is smaller than min_key (= %lld)\n", i + 1, node->keys[i + 1], *min_key);
+					printf("Error: node->keys[%d] (= %lld) is smaller than min_key (= %lld)\n", i, node->keys[i], *min_key);
 					printf("node: ");
 					bptree_node_print(c->bpt, node);
 					printf("\n");
@@ -207,7 +207,7 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 				return BPTREE_TEST_FAILED;
 			}
 			if (min_key != NULL && *min_key > node->keys[i]){
-				printf("Error: node->keys[%d] (= %lld) is smaller than min_key (= %lld)\n", i + 1, node->keys[i + 1], *min_key);
+				printf("Error: node->keys[%d] (= %lld) is smaller than min_key (= %lld)\n", i, node->keys[i], *min_key);
 				printf("node: ");
 				bptree_node_print(c->bpt, node);
 				printf("\n");
