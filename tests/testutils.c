@@ -158,7 +158,7 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 				printf("Error: node->children[%d] is NULL\n", i);
 				return BPTREE_TEST_FAILED;
 			}
-			bptree_key_t *_min_key = (i > 0) ? &node->keys[i - 1] : NULL;
+			bptree_key_t *_min_key = (i > 0) ? &node->keys[i - 1] : min_key;
 			bptree_key_t *_max_key = &node->keys[i];
 			int ret = _check_tree_structure(c, node->children[i], node, _min_key, _max_key);
 			if (ret != BPTREE_TEST_PASSED){
@@ -184,7 +184,7 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 			printf("Error: node->children[-1] is NULL\n");
 			return BPTREE_TEST_FAILED;
 		}
-		int ret = _check_tree_structure(c, node->children[node->used], node, &node->keys[node->used - 1], NULL);
+		int ret = _check_tree_structure(c, node->children[node->used], node, &node->keys[node->used - 1], max_key);
 		if (ret != BPTREE_TEST_PASSED){
 			printf("Error: _check_tree_structure does not end successfully\n");
 			return BPTREE_TEST_FAILED;
