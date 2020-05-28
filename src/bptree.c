@@ -509,7 +509,7 @@ void bptree_node_borrow_keys(bptree_t *bpt, bptree_node_t *left_node, bptree_nod
 		right_node->keys[need_keys - 1] = right_node->parent->keys[parent_key_index];
 		right_node->children[need_keys - 1] = left_node->children[left_node->used];
 		right_node->children[need_keys - 1]->parent = right_node;
-		right_node += need_keys;
+		right_node->used += need_keys;
 		
 		// finally update key in parent node
 		right_node->parent->keys[parent_key_index] = right_node->keys[0];
