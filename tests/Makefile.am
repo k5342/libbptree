@@ -9,6 +9,7 @@ check_PROGRAMS = \
 		leaf_insert \
 		leaf_delete \
 		leaf_borrow_keys \
+		node_borrow_keys \
 		node_shift \
 		insert_ascending \
 		insert_descending \
@@ -36,6 +37,7 @@ leaf_create_SOURCES = leaf_create.c testutils.c
 leaf_insert_SOURCES = leaf_insert.c testutils.c
 leaf_delete_SOURCES = leaf_delete.c testutils.c
 leaf_borrow_keys_SOURCES = leaf_borrow_keys.c testutils.c
+node_borrow_keys_SOURCES = node_borrow_keys.c testutils.c
 node_shift_SOURCES = node_shift.c testutils.c
 insert_ascending_SOURCES = insert_ascending.c testutils.c
 insert_descending_SOURCES = insert_descending.c testutils.c

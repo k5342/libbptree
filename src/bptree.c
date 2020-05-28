@@ -498,21 +498,22 @@ void bptree_node_borrow_keys(bptree_t *bpt, bptree_node_t *left_node, bptree_nod
 		// shift data
 		bptree_node_shift(bpt, right_node, need_keys);
 		
-		// data moves from left to right
-		for(int i = 0; i < need_keys - 1; i++){
-			right_node->keys[i] = left_node->keys[left_node->used - 1];
-			right_node->children[i] = left_node->children[left_node->used - 1];
-			right_node->children[i]->parent = right_node;
-			left_node->used -= 1;
-		}
-		
 		right_node->keys[need_keys - 1] = right_node->parent->keys[parent_key_index];
 		right_node->children[need_keys - 1] = left_node->children[left_node->used];
 		right_node->children[need_keys - 1]->parent = right_node;
-		right_node->used += need_keys;
 		
-		// finally update key in parent node
-		right_node->parent->keys[parent_key_index] = right_node->keys[0];
+		// update key in parent node
+		right_node->parent->keys[parent_key_index] = left_node->keys[left_node->used - need_keys];
+		
+		// data moves from left to right
+		for(int i = 0; i < need_keys - 1; i++){
+			right_node->keys[i] = left_node->keys[left_node->used - need_keys + i + 1];
+			right_node->children[i] = left_node->children[left_node->used - need_keys + i + 1];
+			right_node->children[i]->parent = right_node;
+		}
+		
+		right_node->used += need_keys;
+		left_node->used -= need_keys;
 	}
 }
 
