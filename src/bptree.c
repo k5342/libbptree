@@ -601,11 +601,11 @@ void bptree_leaf_borrow_keys(bptree_t *bpt, bptree_node_t *left_leaf, bptree_nod
 		
 		// insert data
 		for(int i = 0; i < need_keys; i++){
-			right_leaf->keys[i] = left_leaf->keys[left_leaf->used - 1];
-			right_leaf->children[i] = left_leaf->children[left_leaf->used - 1];
-			left_leaf->used -= 1;
+			right_leaf->keys[i] = left_leaf->keys[left_leaf->used - need_keys + i];
+			right_leaf->children[i] = left_leaf->children[left_leaf->used - need_keys + i];
 			right_leaf->used += 1;
 		}
+		left_leaf->used -= need_keys;
 	}
 	// finally update key in parent node
 	right_leaf->parent->keys[parent_key_index] = right_leaf->keys[0];
