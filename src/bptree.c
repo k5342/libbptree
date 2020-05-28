@@ -467,6 +467,10 @@ void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, 
 
 void bptree_node_borrow_keys(bptree_t *bpt, bptree_node_t *left_node, bptree_node_t *right_node,
 								bptree_node_t *underfull_node, int need_keys, int parent_key_index){
+#ifdef DEBUG
+	printf("bptree_node_borrow_keys(bpt = %p, left_node = %p, right_node = %p, underfull_node = %p, need_keys = %d, parent_key_index = %d)\n",
+			bpt, left_node, right_node, underfull_node, need_keys, parent_key_index);
+#endif
 	if (need_keys <= 0){
 		// nothing to do
 		return;
@@ -612,6 +616,12 @@ void bptree_leaf_borrow_keys(bptree_t *bpt, bptree_node_t *left_leaf, bptree_nod
 // n > 0: right shift
 // TODO: merge shift on insert
 void bptree_node_shift(bptree_t *bpt, bptree_node_t *node, int n){
+#ifdef DEBUG
+	printf("bptree_node_shift(bpt = %p, node = %p, n = %d)\n", bpt, node, n);
+	printf("node = ");
+	bptree_leaf_print(bpt, node);
+	printf("\n");
+#endif
 	if (n == 0){
 		return;
 	}
@@ -633,6 +643,11 @@ void bptree_node_shift(bptree_t *bpt, bptree_node_t *node, int n){
 			node->children[i] = node->children[i - n];
 		}
 	}
+#ifdef DEBUG
+	printf("node shift complete: ");
+	bptree_leaf_print(bpt, node);
+	printf("\n");
+#endif
 }
 
 void bptree_leaf_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
