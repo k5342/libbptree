@@ -18,7 +18,7 @@ void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value);
 int bptree_search(bptree_t *bpt, bptree_key_t key, void **value);
 void bptree_delete(bptree_t *bpt, bptree_key_t key);
 ```
-Note: These functions currently does not support multithreading.
+Note: These functions currently do not support multithreading.
 
 #### Accessors for nodes
 ```c
