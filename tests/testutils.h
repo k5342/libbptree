@@ -26,6 +26,7 @@ bptree_test_result check_search(bptree_test_context *c);
 bptree_test_result insert_in_asc(bptree_test_context *c);
 bptree_test_result insert_in_desc(bptree_test_context *c);
 bptree_test_result insert_in_random(bptree_test_context *c);
+bptree_test_result delete_in_asc(bptree_test_context *c);
 
 bptree_test_result check_tree_structure(bptree_test_context *c);
 bptree_test_result check_min_or_max(bptree_test_context *c);

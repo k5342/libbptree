@@ -100,16 +100,25 @@ bptree_test_result insert_in_random(bptree_test_context *c){
 	return BPTREE_TEST_PASSED;
 }
 
+bptree_test_result delete_in_asc(bptree_test_context *c){
+	for (int i = 0; i < c->data_counts; i++){
+		bptree_delete(c->bpt, (bptree_key_t)c->values[i]);
+		if (check_tree_structure(c) == BPTREE_TEST_FAILED){
+			printf("Error: check_tree_structure() returned fail\n");
+			bptree_print(c->bpt);
+			return BPTREE_TEST_FAILED;
+		}
+		bptree_print(c->bpt);
+	}
+	return BPTREE_TEST_PASSED;
+}
+
 bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *node, bptree_node_t *node_parent, bptree_key_t *min_key, bptree_key_t *max_key){
 	if (node == NULL){
 		printf("Error: Passed pointer of node is NULL\n");
 		return BPTREE_TEST_FAILED;
 	}
-	// check attributes
-	if (node->used <= 0){
-		printf("Error: node->used must be greater than zero\n");
-		return BPTREE_TEST_FAILED;
-	}
+	printf("node: %p (%p), node->parent = %p (%p), node_parent = %p (%p)\n", node, &node, node->parent, &node->parent, node_parent, &node_parent);
 	if (node->parent != node_parent){
 		printf("Error: node->parent is not correct (expected %p, but %p)\n", node_parent, node->parent);
 		printf("node: \n");
@@ -123,34 +132,57 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 		printf("\n");
 		return BPTREE_TEST_FAILED;
 	}
+	// check attributes
 	if (node->used > c->bpt->nkeys){
 		printf("Error: node->used exceeds node->nkeys\n");
 		return BPTREE_TEST_FAILED;
 	}
+	if (node == c->bpt->root){
+		if (node->used < 0){
+			printf("Error: node->used must be greater than zero for root node\n");
+			return BPTREE_TEST_FAILED;
+		}
+	} else {
+		if (node->used <= 0){
+			printf("Error: node->used must be greater than zero for non-root node\n");
+			return BPTREE_TEST_FAILED;
+		}
+	}
 	for (int i = 1; i < node->used; i++){
 		if (node->keys[i - 1] >= node->keys[i]){
 			printf("Error: node->keys does not accomplish ascending order\n");
+			printf("node: ");
+			bptree_leaf_print(c->bpt, node);
+			printf("\n");
 			return BPTREE_TEST_FAILED;
 		}
 	}
 	if (node->is_leaf == 1){
-		for (int i = 0; i < node->used; i++){
-			if (max_key != NULL && *max_key <= node->keys[i]){
-				printf("Error: node->keys[%d] (= %lld) is greater than max_key (= %lld)\n", i, node->keys[i], *max_key);
-				printf("node: ");
-				bptree_node_print(c->bpt, node);
-				printf("\n");
+		if (node->used == 0){
+			if (node == c->bpt->root){
+				return BPTREE_TEST_PASSED;
+			} else {
 				return BPTREE_TEST_FAILED;
 			}
-			if (min_key != NULL && *min_key > node->keys[i]){
-				printf("Error: node->keys[%d] (= %lld) is smaller than min_key (= %lld)\n", i, node->keys[i], *min_key);
-				printf("node: ");
-				bptree_node_print(c->bpt, node);
-				printf("\n");
-				return BPTREE_TEST_FAILED;
+		} else {
+			for (int i = 0; i < node->used; i++){
+				if (max_key != NULL && *max_key <= node->keys[i]){
+					printf("Error: node->keys[%d] (= %lld) is greater than max_key (= %lld)\n", i, node->keys[i], *max_key);
+					printf("node: ");
+					bptree_node_print(c->bpt, node);
+					printf("\n");
+					return BPTREE_TEST_FAILED;
+				}
+				if (min_key != NULL && *min_key > node->keys[i]){
+					printf("Error: node->keys[%d] (= %lld) is smaller than min_key (= %lld)\n", i, node->keys[i], *min_key);
+					printf("node: ");
+					bptree_node_print(c->bpt, node);
+					printf("\n");
+					return BPTREE_TEST_FAILED;
+				}
 			}
+			return BPTREE_TEST_PASSED;
 		}
-		return BPTREE_TEST_PASSED;
 	} else if (node->is_leaf == 0){
 		// check children
 		for (int i = 0; i < node->used; i++){
@@ -170,6 +202,8 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 				printf("node: ");
 				bptree_node_print(c->bpt, node);
 				printf("\n");
+				printf("tree: ");
+				bptree_print(c->bpt);
 				return BPTREE_TEST_FAILED;
 			}
 			if (min_key != NULL && *min_key > node->keys[i]){
@@ -182,6 +216,9 @@ bptree_test_result _check_tree_structure(bptree_test_context *c, bptree_node_t *
 		}
 		if (node->children[node->used] == NULL){
 			printf("Error: node->children[-1] is NULL\n");
+			printf("node: ");
+			bptree_leaf_print(c->bpt, node);
+			printf("\n");
 			return BPTREE_TEST_FAILED;
 		}
 		int ret = _check_tree_structure(c, node->children[node->used], node, &node->keys[node->used - 1], max_key);
