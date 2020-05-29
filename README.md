@@ -16,7 +16,7 @@ bptree_t *bptree_init(int nkeys);
 void bptree_free(bptree_t *bpt);
 void bptree_insert(bptree_t *bpt, bptree_key_t key, void *value);
 int bptree_search(bptree_t *bpt, bptree_key_t key, void **value);
-void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr);
+void bptree_delete(bptree_t *bpt, bptree_key_t key);
 ```
 Note: These functions currently does not support multithreading.
 
