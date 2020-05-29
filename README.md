@@ -25,7 +25,7 @@ Note: These functions currently does not support multithreading.
 int bptree_node_get_key_count(bptree_t *bpt, bptree_node_t *node);
 bptree_key_t bptree_node_get_key_by_index(bptree_t *bpt, bptree_node_t *node, int index);
 bptree_node_t *bptree_node_get_children_by_index(bptree_t *bpt, bptree_node_t *node, int index);
-int bptree_node_is_leaf(bptree_node_t *bpt, bptree_node_t *node);
+int bptree_node_is_leaf(bptree_t *bpt, bptree_node_t *node);
 ```
 
 #### Accessors for leaves
