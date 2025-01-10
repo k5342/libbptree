@@ -10,6 +10,7 @@ void bptree_perror(char *s){
 
 void bptree_leaf_print(bptree_t *bpt, bptree_node_t *leaf){
 	printf("{");
+	printf("%p|", leaf->prev);
 	if (leaf->used > 0){
 		for(int i = 0; i < leaf->used; i++){
 			printf("%p %lld", leaf->children[i], leaf->keys[i]);
@@ -66,6 +67,7 @@ bptree_node_t *bptree_node_create(bptree_t *bpt){
 	memset(node, 0, sizeof(bptree_node_t));
 	node->context = bpt;
 	node->parent = NULL;
+	node->prev = NULL;
 	node->children = (bptree_node_t **)malloc(sizeof(bptree_node_t *) * (nkeys + 1));
 	node->keys = (bptree_key_t *)malloc(sizeof(bptree_key_t) * nkeys);
 	node->used = 0;
@@ -303,9 +305,17 @@ void bptree_leaf_insert(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key, vo
 		}
 		
 		// divide into left and right node
+		// add the new like this: leaf --> new --> next_leaf
 		bptree_node_t *new = bptree_leaf_create(bpt);
-		new->children[bpt->nkeys] = leaf->children[bpt->nkeys];
+		bptree_node_t *next_leaf = leaf->children[bpt->nkeys];
+		new->children[bpt->nkeys] = next_leaf;
 		leaf->children[bpt->nkeys] = new;
+		if (next_leaf) {
+			new->prev = next_leaf->prev;
+			next_leaf->prev = new;
+		} else {
+			new->prev = leaf;
+		}
 		
 		int divide_right_size = (bpt->nkeys + 1) / 2;
 		int divide_left_size = (bpt->nkeys + 1) - divide_right_size;
@@ -542,6 +552,9 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 			left_leaf->children[left_leaf->used] = right_leaf->children[i];
 			left_leaf->used += 1;
 		}
+		if (right_leaf->children[bpt->nkeys]) {
+			right_leaf->children[bpt->nkeys]->prev = left_leaf;
+		}
 		left_leaf->children[bpt->nkeys] = right_leaf->children[bpt->nkeys];
 		
 		// propagate to parent node
@@ -777,6 +790,10 @@ bptree_node_t *bptree_leaf_get_rightmost(bptree_t *bpt){
 		current = current->children[current->used];
 	}
 	return current;
+}
+
+bptree_node_t *bptree_leaf_get_leftadjacent(bptree_t *bpt, bptree_node_t *leaf){
+	return leaf->prev;
 }
 
 bptree_node_t *bptree_leaf_get_rightadjacent(bptree_t *bpt, bptree_node_t *leaf){
