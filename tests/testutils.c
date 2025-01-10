@@ -242,6 +242,20 @@ bptree_test_result check_tree_structure(bptree_test_context *c){
 		printf("Error: bpt->root == NULL\n");
 		return BPTREE_TEST_FAILED;
 	}
+	// check leaf
+	bptree_node_t *leaf = bptree_leaf_get_leftmost(c->bpt);
+	while (leaf != NULL) {
+		if (leaf->is_leaf != true) {
+			printf("Error: leaf->is_leaf != true\n");
+			return BPTREE_TEST_FAILED;
+		}
+		bptree_node_t *next = bptree_leaf_get_rightadjacent(c->bpt, leaf);
+		if (next != NULL && next->prev != leaf) {
+			printf("Error: next->prev != leaf\n");
+			return BPTREE_TEST_FAILED;
+		}
+		leaf = next;
+	}
 	return _check_tree_structure(c, c->bpt->root, c->bpt->root->parent, NULL, NULL);
 }
 
@@ -312,6 +326,17 @@ bptree_test_result check_leaf(bptree_test_context *c){
 				return BPTREE_TEST_FAILED;
 			}
 		} else {
+			if (next->prev != leaf) {
+				printf("Error: the current leaf:%p but the prev of the next leaf %p indicate:%p\n", leaf, next, next->prev);
+				printf("leaf:%p: ", leaf);
+				bptree_leaf_print(c->bpt, leaf);
+				printf("\n");
+				printf("leaf:%p: ", next);
+				bptree_leaf_print(c->bpt, next);
+				printf("\n");
+				free(buf);
+				return BPTREE_TEST_FAILED;
+			}
 			leaf = next;
 		}
 	}
