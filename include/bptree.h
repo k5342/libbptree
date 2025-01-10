@@ -14,6 +14,7 @@ typedef struct bptree_node {
 	struct bptree *context;
 	struct bptree_node *parent;
 	struct bptree_node **children;
+	struct bptree_node *prev;
 	bptree_key_t *keys;
 	int used;
 	int is_leaf;
@@ -62,6 +63,7 @@ void bptree_node_destroy(bptree_node_t *node);
 
 bptree_node_t *bptree_leaf_get_leftmost(bptree_t *bpt);
 bptree_node_t *bptree_leaf_get_rightmost(bptree_t *bpt);
+bptree_node_t *bptree_leaf_get_leftadjacent(bptree_t *bpt, bptree_node_t *leaf);
 bptree_node_t *bptree_leaf_get_rightadjacent(bptree_t *bpt, bptree_node_t *leaf);
 
 // utils
