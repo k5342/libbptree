@@ -393,8 +393,10 @@ void bptree_node_delete(bptree_t *bpt, bptree_node_t *node, bptree_node_t *ptr){
 		} else {
 			// redistribute or merge from adjacent node
 			// first, look up the parent node and then find adjacent node and key
+#ifdef DEBUG
 			bptree_leaf_print(bpt, node->parent);
 			printf("\n");
+#endif
 			int idx = bptree_node_ptr_index(bpt, node->parent, node);
 			if (idx < node->parent->used){
 				// look right sibling
@@ -470,7 +472,9 @@ void bptree_node_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_node, 
 	} else {
 		// redistribute pointers
 		int need_keys = node_minimum_keys - underfull_node->used;
+#ifdef DEBUG
 		printf("need_keys: %d\n", need_keys);
+#endif
 		bptree_node_borrow_keys(bpt, left_node, right_node, underfull_node, need_keys, parent_key_index);
 	}
 }
@@ -540,14 +544,18 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 #endif
 	int leaf_minimum_keys = ceil((float)bpt->nkeys / 2);
 	bptree_node_t *borrow_leaf = (left_leaf == underfull_leaf) ? right_leaf : left_leaf;
+#ifdef DEBUG
 	printf("borrow_leaf: %p, used = %d\n", borrow_leaf, borrow_leaf->used);
+#endif
 	if (borrow_leaf->used - 1 < leaf_minimum_keys){
 		// merge
 #ifdef DEBUG
 		printf("bptree_leaf_redistribute_or_merge: merge\n");
 #endif
 		for(int i = 0; i < right_leaf->used; i++){
+#ifdef DEBUG
 			printf("left_leaf->used = %d, right_leaf->used = %d, i = %d\n", left_leaf->used, right_leaf->used, i);
+#endif
 			left_leaf->keys[left_leaf->used] = right_leaf->keys[i];
 			left_leaf->children[left_leaf->used] = right_leaf->children[i];
 			left_leaf->used += 1;
@@ -587,7 +595,9 @@ void bptree_leaf_redistribute_or_merge(bptree_t *bpt, bptree_node_t *left_leaf, 
 	} else {
 		// redistribute pointers
 		int need_keys = leaf_minimum_keys - underfull_leaf->used;
+#ifdef DEBUG
 		printf("need_keys: %d\n", need_keys);
+#endif
 		bptree_leaf_borrow_keys(bpt, left_leaf, right_leaf, underfull_leaf, need_keys, parent_key_index);
 	}
 }
@@ -703,15 +713,19 @@ void bptree_leaf_delete(bptree_t *bpt, bptree_node_t *leaf, bptree_key_t key){
 			printf("bptree_leaf_delete: leaf->parent->used = %d, idx of ptr on parent = %d\n", leaf->parent->used, idx);
 #endif
 			if (idx < leaf->parent->used){
+#ifdef DEBUG
 				printf("-------------\n");
+#endif
 				// look right sibling
 				bptree_node_t *affected = leaf->parent->children[idx + 1];
 				bptree_leaf_redistribute_or_merge(bpt, leaf, affected, leaf, idx);
 			} else {
 				// pointer found in the most right of children
 				// then look left sibling
+#ifdef DEBUG
 				printf("##########\n");
 				printf("right\n");
+#endif
 				bptree_node_t *affected = leaf->parent->children[idx - 1];
 				bptree_leaf_redistribute_or_merge(bpt, affected, leaf, leaf, idx - 1);
 			}
